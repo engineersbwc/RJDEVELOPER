@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { 
-  Menu, 
-  X, 
-  Construction, 
-  HardHat, 
-  Ruler, 
-  PaintBucket, 
-  Phone, 
-  Mail, 
-  MapPin, 
-  ChevronRight, 
-  Instagram, 
-  Facebook, 
-  Twitter, 
+import {
+  Menu,
+  X,
+  Construction,
+  HardHat,
+  Ruler,
+  PaintBucket,
+  Phone,
+  PhoneCall,
+  Mail,
+  MapPin,
+  ChevronRight,
+  Instagram,
+  Facebook,
+  Twitter,
   MessageSquare,
   Linkedin,
   Clock,
@@ -27,6 +28,12 @@ import {
   ClipboardList,
   Layers
 } from "lucide-react";
+
+const WhatsAppIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
+  </svg>
+);
 import { motion, AnimatePresence } from "motion/react";
 
 // --- Constants & Types ---
@@ -102,16 +109,16 @@ const Navbar = () => {
         {/* Desktop Links */}
         <div className="hidden lg:flex items-center gap-6">
           {navLinks.map((link) => (
-            <a 
-              key={link.name} 
-              href={link.href} 
+            <a
+              key={link.name}
+              href={link.href}
               className={`font-bold text-sm transition-colors ${scrolled ? "text-secondary/70 hover:text-primary" : "text-white/80 hover:text-white"}`}
             >
               {link.name}
             </a>
           ))}
-          <div className={`flex items-center gap-2 font-black text-xs ${scrolled ? "text-secondary" : "text-white"}`}>
-            <Phone className="w-4 h-4 text-primary" />
+          <div className={`flex items-center gap-1.5 font-semibold text-[11px] ${scrolled ? "text-secondary" : "text-white"}`}>
+            <PhoneCall className="w-3.5 h-3.5 text-primary" />
             <a href="tel:+923331660015">+92 333 1660015</a>
           </div>
           <a href="#contact" className="bg-primary hover:bg-secondary hover:text-white text-secondary px-5 py-2 rounded-lg font-bold text-sm transition-all">
@@ -128,7 +135,7 @@ const Navbar = () => {
       {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -136,17 +143,17 @@ const Navbar = () => {
           >
             <div className="p-8 flex flex-col gap-6">
               {navLinks.map((link) => (
-                <a 
-                  key={link.name} 
-                  href={link.href} 
+                <a
+                  key={link.name}
+                  href={link.href}
                   onClick={() => setIsOpen(false)}
                   className="text-secondary text-xl font-bold hover:text-primary transition-colors border-b border-slate-100 pb-2"
                 >
                   {link.name}
                 </a>
               ))}
-              <a 
-                href="#contact" 
+              <a
+                href="#contact"
                 onClick={() => setIsOpen(false)}
                 className="bg-primary text-secondary text-center py-4 rounded-xl font-black uppercase"
               >
@@ -164,23 +171,23 @@ const Hero = () => {
   return (
     <section id="home" className="relative h-[75vh] min-h-[450px] flex items-center overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <img 
-          src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=2000" 
-          alt="Construction" 
+        <img
+          src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=2000"
+          alt="Construction"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-secondary/70"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-center">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
         >
           <span className="text-primary font-bold uppercase tracking-[0.2em] mb-4 block text-sm">Expert Construction & Civil Engineering</span>
           <h1 className="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
-            Building Your Future With <br/>
+            Building Your Future With <br />
             <span className="text-primary tracking-tight">Strength & Trust</span>
           </h1>
           <p className="text-white/80 text-base md:text-lg max-w-2xl mx-auto mb-8 font-medium">
@@ -215,8 +222,8 @@ const About = () => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="relative">
-            <img 
-              src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=1000" 
+            <img
+              src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=1000"
               alt="About Us"
               className="rounded-3xl shadow-xl w-full h-[350px] object-cover"
             />
@@ -226,7 +233,7 @@ const About = () => {
             </div>
           </div>
           <div>
-            <SectionTitle subtitle="About RJ Developer" title="Constructing Legacies Since 2009" />
+            <SectionTitle subtitle="About RJ Developer" title="Constructing Legacies Since 2023" />
             <p className="text-slate-600 text-base mb-4 leading-relaxed">
               At RJ Developer, we don't just build structures; we build trust. Our journey started with a small team of passionate engineers, and today we are one of the most reliable names in civil engineering and infrastructure development.
             </p>
@@ -264,10 +271,10 @@ const Services = () => {
         <div className="flex flex-col lg:flex-row gap-10 items-center">
           <div className="flex-1 lg:max-w-[50%]">
             <SectionTitle subtitle="What We Do" title="Our Professional Services" />
-            
+
             <div className="space-y-3">
               {SERVICES.map((service, index) => (
-                <motion.div 
+                <motion.div
                   key={service.title}
                   initial={{ opacity: 0, x: -10 }}
                   whileInView={{ opacity: 1, x: 0 }}
@@ -293,9 +300,9 @@ const Services = () => {
 
           <div className="flex-1 relative group">
             <div className="relative z-10 rounded-[2rem] overflow-hidden shadow-lg border border-white">
-              <img 
-                src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200" 
-                alt="Modern House Design" 
+              <img
+                src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80&w=1200"
+                alt="Modern House Design"
                 className="w-full h-full min-h-[300px] object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-secondary/40 to-transparent"></div>
@@ -320,13 +327,13 @@ const Projects = () => {
         <SectionTitle subtitle="Our Portfolio" title="Featured Projects" centered />
       </div>
       <div className="mt-8 relative w-full flex overflow-hidden">
-        <motion.div 
+        <motion.div
           className="flex gap-4 w-max px-4"
           animate={{ x: ["0%", "-50%"] }}
           transition={{ ease: "linear", duration: 30, repeat: Infinity }}
         >
           {[...PROJECTS, ...PROJECTS].map((p, i) => (
-            <motion.div 
+            <motion.div
               key={`${p.id}-${i}`}
               whileHover={{ y: -10 }}
               className="relative rounded-2xl overflow-hidden shadow-lg aspect-[4/5] bg-secondary group w-64 sm:w-72 flex-shrink-0"
@@ -345,13 +352,13 @@ const Projects = () => {
 };
 
 const Contact = () => {
-  const [formData, setFormData] = useState({ 
-    name: "", 
-    email: "", 
-    phone: "", 
-    sector: "Building", 
-    address: "", 
-    message: "" 
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    sector: "Building",
+    address: "",
+    message: ""
   });
   const [status, setStatus] = useState<{ type: 'success' | 'error' | 'loading' | null; message: string }>({ type: null, message: "" });
 
@@ -383,31 +390,31 @@ const Contact = () => {
           <SectionTitle subtitle="Inquiry" title="Start a Discussion" centered />
           <form onSubmit={handleSubmit} className="space-y-3">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-muted border border-slate-200 rounded-xl p-3.5 text-xs text-secondary focus:border-primary outline-none" 
+                className="w-full bg-muted border border-slate-200 rounded-xl p-3.5 text-xs text-secondary focus:border-primary outline-none"
                 placeholder="Your Name"
               />
-              <input 
-                type="email" 
+              <input
+                type="email"
                 required
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full bg-muted border border-slate-200 rounded-xl p-3.5 text-xs text-secondary focus:border-primary outline-none" 
+                className="w-full bg-muted border border-slate-200 rounded-xl p-3.5 text-xs text-secondary focus:border-primary outline-none"
                 placeholder="Email Address"
               />
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <input 
-                type="tel" 
+              <input
+                type="tel"
                 required
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                className="w-full bg-muted border border-slate-200 rounded-xl p-3.5 text-xs text-secondary focus:border-primary outline-none" 
+                className="w-full bg-muted border border-slate-200 rounded-xl p-3.5 text-xs text-secondary focus:border-primary outline-none"
                 placeholder="Phone Number"
               />
               <select
@@ -421,34 +428,34 @@ const Contact = () => {
               </select>
             </div>
 
-            <input 
-              type="text" 
+            <input
+              type="text"
               required
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              className="w-full bg-muted border border-slate-200 rounded-xl p-3.5 text-xs text-secondary focus:border-primary outline-none" 
+              className="w-full bg-muted border border-slate-200 rounded-xl p-3.5 text-xs text-secondary focus:border-primary outline-none"
               placeholder="Project Address / Location"
             />
 
-            <textarea 
-              rows={2} 
+            <textarea
+              rows={2}
               required
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-              className="w-full bg-muted border border-slate-200 rounded-xl p-3.5 text-xs text-secondary focus:border-primary outline-none resize-none" 
+              className="w-full bg-muted border border-slate-200 rounded-xl p-3.5 text-xs text-secondary focus:border-primary outline-none resize-none"
               placeholder="About Project (Tell us more...)"
             ></textarea>
             <button className="w-full bg-primary hover:bg-secondary hover:text-white text-secondary py-3.5 rounded-xl font-black text-base transition-all">
               Send Message
             </button>
             {status.type && (
-              <p className={`text-center font-bold mt-1 text-[10px] ${status.type ==='success' ? 'text-green-500' : 'text-red-500'}`}>{status.message}</p>
+              <p className={`text-center font-bold mt-1 text-[10px] ${status.type === 'success' ? 'text-green-500' : 'text-red-500'}`}>{status.message}</p>
             )}
           </form>
-          
+
           <div className="mt-8 pt-8 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div>
-              <Phone className="w-4 h-4 text-primary mx-auto mb-0.5" />
+              <PhoneCall className="w-4 h-4 text-primary mx-auto mb-0.5" />
               <p className="font-bold text-[10px]">+92 333 1660015</p>
             </div>
             <div>
@@ -481,15 +488,15 @@ const Footer = () => {
           <a href="#contact" className="hover:text-primary transition-colors">Contact</a>
         </div>
         <div className="flex gap-3">
-           <a href="https://www.linkedin.com/in/engrtrashid95" target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:bg-primary transition-colors">
-             <Linkedin className="w-3.5 h-3.5 text-white" />
-           </a>
-           <a href={`https://wa.me/923331660015`} target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:bg-accent transition-colors">
-             <MessageSquare className="w-3.5 h-3.5 text-white" />
-           </a>
-           <a href="tel:+923331660015" className="bg-white/10 p-2 rounded-full hover:bg-primary transition-colors">
-             <Phone className="w-3.5 h-3.5 text-white" />
-           </a>
+          <a href="https://www.linkedin.com/in/engrtrashid95" target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:bg-primary transition-colors">
+            <Linkedin className="w-3.5 h-3.5 text-white" />
+          </a>
+          <a href={`https://wa.me/923331660015`} target="_blank" rel="noopener noreferrer" className="bg-white/10 p-2 rounded-full hover:bg-accent transition-colors">
+            <WhatsAppIcon className="w-3.5 h-3.5 text-white" />
+          </a>
+          <a href="tel:+923331660015" className="bg-white/10 p-2 rounded-full hover:bg-primary transition-colors">
+            <PhoneCall className="w-3.5 h-3.5 text-white" />
+          </a>
         </div>
       </div>
     </footer>
@@ -501,24 +508,24 @@ const FloatingActions = () => {
   const phone = "923331660015";
 
   return (
-    <div className="fixed bottom-10 right-10 flex flex-col items-center gap-4 z-[100]">
-      <a 
+    <div className="fixed bottom-4 right-4 md:bottom-10 md:right-10 flex flex-col items-center gap-2 md:gap-4 z-[100]">
+      <a
         href={`tel:+${phone}`}
-        className="w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-2xl cursor-pointer border-2 border-white hover:scale-110 active:scale-95 transition-all text-secondary"
+        className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-2xl cursor-pointer border-2 border-white hover:scale-110 active:scale-95 transition-all text-secondary"
         title="Call Us Now"
       >
-        <Phone className="w-7 h-7" />
+        <PhoneCall className="w-5 h-5" />
       </a>
-      <a 
+      <a
         href={`https://wa.me/${phone}?text=${message}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-2xl flex items-center justify-center shadow-2xl cursor-pointer border-2 border-white/20 hover:scale-110 active:scale-95 transition-all group relative overflow-hidden"
+        className="w-12 h-12 bg-gradient-to-br from-[#25D366] to-[#128C7E] rounded-full flex items-center justify-center shadow-2xl cursor-pointer border-2 border-white/20 hover:scale-110 active:scale-95 transition-all group relative overflow-hidden"
         title="WhatsApp Chat"
       >
         <div className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        <MessageSquare className="w-8 h-8 text-white relative z-10" />
-        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white flex items-center justify-center z-20">
+        <WhatsAppIcon className="w-6 h-6 text-white relative z-10" />
+        <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center z-20">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
         </span>
       </a>
