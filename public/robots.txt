@@ -1,0 +1,12 @@
+# RJ Developer - Robots.txt
+# https://rjdeveloper.com
+
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://rjdeveloper.com/sitemap.xml
+
+# Crawl-delay (optional, for polite crawling)
+Crawl-delay: 1
