@@ -537,11 +537,13 @@ export default function App() {
   return (
     <div className="bg-white font-sans selection:bg-primary selection:text-secondary">
       <Navbar />
-      <Hero />
-      <About />
-      <Services />
-      <Projects />
-      <Contact />
+      <main>
+        <Hero />
+        <About />
+        <Services />
+        <Projects />
+        <Contact />
+      </main>
       <Footer />
       <FloatingActions />
     </div>

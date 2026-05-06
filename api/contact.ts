@@ -39,7 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const mailOptions = {
     from: process.env.MAIL_USER,
-    to: process.env.MAIL_USER, 
+    to: process.env.MAIL_USER,
     subject: `New Lead: ${name} - ${sector}`,
     html: `
       <h2>New Project Inquiry</h2>
