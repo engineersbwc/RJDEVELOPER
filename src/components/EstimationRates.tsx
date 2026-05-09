@@ -26,7 +26,7 @@ const EstimationRates = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[20px] md:gap-[24px]">
+        <div className="flex md:grid overflow-x-auto snap-x snap-mandatory md:overflow-x-visible md:grid-cols-2 lg:grid-cols-4 gap-[20px] md:gap-[24px] pb-6 -mx-6 px-6 md:pb-0 md:mx-0 md:px-0 hide-scrollbar">
           {ESTIMATION_RATES.map((rate, i) => (
             <motion.div
               key={rate.id}
@@ -35,7 +35,7 @@ const EstimationRates = () => {
               whileHover={{ y: -8, transition: { duration: 0.2 } }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.12, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative rounded-2xl p-6 flex flex-col h-full group cursor-pointer overflow-hidden"
+              className="relative rounded-2xl p-6 flex flex-col h-full group cursor-pointer overflow-hidden min-w-[85vw] sm:min-w-[280px] md:min-w-0 snap-center"
               style={{
                 background: 'rgba(255,255,255,0.04)',
                 backdropFilter: 'blur(20px)',

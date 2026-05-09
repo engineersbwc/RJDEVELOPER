@@ -102,7 +102,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <h4 className="text-[12px] text-white/40 uppercase tracking-wider mb-[4px] font-medium">{label}</h4>
-                      <p className="text-[15px] font-medium text-white leading-snug">{value}</p>
+                      <p className="text-[15px] font-medium text-white leading-snug break-all">{value}</p>
                     </div>
                   </motion.div>
                 ))}
