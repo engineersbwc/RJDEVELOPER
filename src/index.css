@@ -1,13 +1,16 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&family=Urbanist:wght@600;700;800;900&display=swap');
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Urbanist", ui-sans-serif, system-ui, sans-serif;
 
-  --color-primary: #0F766E;
-  --color-secondary: #1F2937;
-  --color-accent: #14B8A6;
-  --color-muted: #F3F4F6;
+  --color-primary: #020617;
+  --color-secondary: #0f172a;
+  --color-accent: #f59e0b;
+  --color-gray-soft: #94a3b8;
+  --color-muted: #f8fafc;
 }
 
 @layer base {
@@ -16,12 +19,69 @@
   }
 
   body {
-    @apply bg-white font-sans text-secondary antialiased;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #94a3b8;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Urbanist", ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    color: #fff;
   }
 }
 
 @layer utilities {
-  .text-stroke {
-    -webkit-text-stroke: 1px currentColor;
+  .glass {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .section-label {
+    font-family: "Inter", sans-serif;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #f59e0b;
+  }
+
+  .section-title {
+    font-family: "Urbanist", sans-serif;
+    font-size: clamp(1.875rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: #ffffff;
+  }
+
+  .section-subtitle {
+    font-family: "Inter", sans-serif;
+    font-size: clamp(0.9375rem, 1.5vw, 1.0625rem);
+    font-weight: 400;
+    line-height: 1.75;
+    color: #64748b;
+  }
+
+  .card-title {
+    font-family: "Urbanist", sans-serif;
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+  }
+
+  .body-text {
+    font-family: "Inter", sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.75;
+    color: rgba(255, 255, 255, 0.55);
   }
 }
