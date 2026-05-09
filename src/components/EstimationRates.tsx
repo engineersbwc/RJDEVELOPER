@@ -35,7 +35,7 @@ const EstimationRates = () => {
 
               viewport={{ once: true }}
               transition={{ delay: i * 0.12, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative rounded-2xl p-6 flex flex-col h-full group cursor-pointer overflow-hidden min-w-[85vw] sm:min-w-[280px] md:min-w-0 snap-center"
+              className="relative rounded-2xl p-6 flex flex-col h-auto group cursor-pointer overflow-hidden min-w-[85vw] sm:min-w-[280px] md:min-w-0 snap-center"
               style={{
                 background: 'rgba(255,255,255,0.04)',
                 backdropFilter: 'blur(20px)',
@@ -80,7 +80,7 @@ const EstimationRates = () => {
                   className="w-full flex flex-col items-center justify-center rounded-xl py-3.5 px-2 transition-all duration-400"
                   style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
                 >
-                  <span className="text-white font-heading font-bold group-hover:text-accent transition-colors duration-300" style={{ fontSize: '1.375rem', letterSpacing: '-0.02em' }}>{rate.price}</span>
+                  <span className="text-white font-heading font-bold group-hover:text-accent transition-colors duration-300 text-[1.125rem] sm:text-[1.375rem] tracking-tight">{rate.price}</span>
                   <span className="text-white/35 font-semibold mt-0.5 uppercase group-hover:text-accent/60 transition-colors duration-300" style={{ fontSize: '0.625rem', letterSpacing: '0.15em' }}>{rate.unit}</span>
                 </div>
               </div>
