@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Menu, X } from 'lucide-react';
+import { Building2, Menu, X, LogOut, User as UserIcon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -54,16 +56,33 @@ const Navbar = () => {
                 {link.name}
               </a>
             ))}
-            <a
-              href="#contact"
-              className="px-6 min-h-[44px] flex items-center rounded-xl font-semibold text-[14px] md:text-[16px] transition-all text-white"
-              style={{
-                background: 'linear-gradient(135deg, #f59e0b, #d97706)',
-                boxShadow: '0 0 20px rgba(245,158,11,0.4)',
-              }}
-            >
-              Get a Quote
-            </a>
+            
+            {user ? (
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 text-white/80 font-medium bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+                  <UserIcon className="w-4 h-4 text-accent" />
+                  <span className="text-sm">{user.name}</span>
+                </div>
+                <button
+                  onClick={logout}
+                  className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 hover:text-red-400 hover:bg-red-400/10 transition-all"
+                  title="Logout"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
+            ) : (
+              <a
+                href="#contact"
+                className="px-6 min-h-[44px] flex items-center rounded-xl font-semibold text-[14px] md:text-[16px] transition-all text-white"
+                style={{
+                  background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                  boxShadow: '0 0 20px rgba(245,158,11,0.4)',
+                }}
+              >
+                Get a Quote
+              </a>
+            )}
           </nav>
 
           {/* Mobile Toggle */}
@@ -92,6 +111,13 @@ const Navbar = () => {
             }}
           >
             <div className="flex flex-col p-6 gap-[16px]">
+              {user && (
+                <div className="flex items-center gap-3 text-white font-semibold mb-2 bg-white/5 p-4 rounded-xl border border-white/10">
+                  <UserIcon className="w-5 h-5 text-accent" />
+                  <span>{user.name}</span>
+                </div>
+              )}
+              
               {navLinks.map((link) => (
                 <a
                   key={link.name}
@@ -102,14 +128,27 @@ const Navbar = () => {
                   {link.name}
                 </a>
               ))}
-              <a
-                href="#contact"
-                onClick={() => setIsMenuOpen(false)}
-                className="text-white text-center min-h-[44px] flex items-center justify-center rounded-xl font-semibold text-[16px] mt-[8px]"
-                style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
-              >
-                Contact Us
-              </a>
+              
+              {user ? (
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="text-white text-center min-h-[44px] flex items-center justify-center rounded-xl font-semibold text-[16px] mt-[8px] bg-red-500/20 border border-red-500/30 hover:bg-red-500/30 transition-all"
+                >
+                  <LogOut className="w-5 h-5 mr-2" /> Logout
+                </button>
+              ) : (
+                <a
+                  href="#contact"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-white text-center min-h-[44px] flex items-center justify-center rounded-xl font-semibold text-[16px] mt-[8px]"
+                  style={{ background: 'linear-gradient(135deg, #f59e0b, #d97706)' }}
+                >
+                  Contact Us
+                </a>
+              )}
             </div>
           </motion.div>
         )}

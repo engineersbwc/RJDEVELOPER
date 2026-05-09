@@ -4,17 +4,27 @@ import path from "path";
 import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import connectDB from "./config/db";
+import authRoutes from "./routes/authRoutes";
 
 dotenv.config();
+
+// Connect to database
+connectDB();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  const PORT = process.env.PORT || 3000;
 
   app.use(express.json());
+  app.use(cookieParser());
+
+  // Mount routers
+  app.use("/api/auth", authRoutes);
 
   // API Route: Contact Form
   app.post("/api/contact", async (req, res) => {
@@ -90,6 +100,12 @@ async function startServer() {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
+  
+  // Global Error Handler
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error("Unhandled Server Error:", err);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  });
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
