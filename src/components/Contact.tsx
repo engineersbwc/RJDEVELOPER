@@ -96,13 +96,13 @@ const Contact = () => {
                   { icon: Mail, label: 'Email Address', value: 'm.rashidmehmood95@gmail.com' },
                   { icon: Clock, label: 'Working Hours', value: 'Mon - Sat: 9:00 AM - 6:00 PM' },
                 ].map(({ icon: Icon, label, value }) => (
-                  <motion.div key={label} whileHover={{ x: 5 }} className="flex items-start gap-[16px] group">
-                    <div className="p-3 rounded-xl transition-all duration-300 group-hover:scale-110" style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>
-                      <Icon className="text-accent w-5 h-5" />
+                  <motion.div key={label} whileHover={{ x: 5 }} className="flex items-start gap-[12px] sm:gap-[16px] group">
+                    <div className="p-2.5 sm:p-3 rounded-xl transition-all duration-300 group-hover:scale-110 shrink-0" style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.2)' }}>
+                      <Icon className="text-accent w-4 h-4 sm:w-5 sm:h-5" />
                     </div>
-                    <div>
-                      <h4 className="text-[12px] text-white/40 uppercase tracking-wider mb-[4px] font-medium">{label}</h4>
-                      <p className="text-[15px] font-medium text-white leading-snug break-all">{value}</p>
+                    <div className="min-w-0">
+                      <h4 className="text-[10px] sm:text-[12px] text-white/40 uppercase tracking-wider mb-[2px] sm:mb-[4px] font-medium">{label}</h4>
+                      <p className="text-[12.5px] sm:text-[15px] font-medium text-white leading-snug whitespace-nowrap tracking-tight sm:tracking-normal">{value}</p>
                     </div>
                   </motion.div>
                 ))}

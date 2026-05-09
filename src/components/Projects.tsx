@@ -28,7 +28,7 @@ const Projects = () => {
               key={p.id}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -8, transition: { duration: 0.2 } }}
+
               viewport={{ once: true }}
               transition={{ delay: i * 0.12, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="rounded-2xl overflow-hidden group cursor-pointer relative"
