@@ -50,7 +50,7 @@ async function startServer() {
 
         await transporter.sendMail({
           from: `"RJ Developer Contact" <${process.env.MAIL_USER}>`,
-          to: process.env.MAIL_USER, 
+          to: process.env.MAIL_USER,
           subject: `New Project Inquiry from ${name} (${sector})`,
           text: `
             Name: ${name}
@@ -100,7 +100,7 @@ async function startServer() {
       res.sendFile(path.join(distPath, "index.html"));
     });
   }
-  
+
   // Global Error Handler
   app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
     console.error("Unhandled Server Error:", err);
