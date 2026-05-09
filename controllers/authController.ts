@@ -12,7 +12,7 @@ const generateToken = (id: string) =>
   });
 
 const sendTokenResponse = (user: IUser, statusCode: number, res: Response) => {
-  const token = generateToken(user._id as string);
+  const token = generateToken(user._id!.toString());
   const cookieExpire = 7 * 24 * 60 * 60 * 1000; // 7 days
 
   res

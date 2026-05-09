@@ -1,36 +1,47 @@
+import express from "express";
+import cors from "cors";
+import cookieParser from "cookie-parser";
+import connectDB from "../config/db";
+import authRoutes from "../routes/authRoutes";
 import nodemailer from "nodemailer";
-import type { VercelRequest, VercelResponse } from "@vercel/node";
+import dotenv from "dotenv";
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Setup CORS headers
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
-  res.setHeader("Access-Control-Allow-Headers", "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version");
+dotenv.config();
 
-  // Handle preflight request
-  if (req.method === "OPTIONS") {
-    res.status(200).end();
-    return;
-  }
+const app = express();
 
-  // Only allow POST requests
-  if (req.method !== "POST") {
-    res.status(405).json({ error: "Method Not Allowed" });
-    return;
-  }
+// Set up CORS properly for Vercel
+app.use(cors({
+  origin: true, // Allow all origins
+  credentials: true,
+}));
 
+app.use(express.json());
+app.use(cookieParser());
+
+// Reusable Database connection handler for serverless
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
+// --- ROUTES ---
+app.use("/api/auth", authRoutes);
+
+app.post("/api/contact", async (req, res) => {
   const { name, email, phone, sector, address, message } = req.body || {};
 
   if (!name || !email || !phone || !sector || !address || !message) {
-    res.status(400).json({ error: "All fields are required" });
-    return;
+    return res.status(400).json({ error: "All fields are required" });
   }
 
   const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST || "smtp.gmail.com",
     port: parseInt(process.env.MAIL_PORT || "587", 10),
     secure: process.env.MAIL_SECURE === "true",
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
     auth: {
       user: process.env.MAIL_USER,
       pass: process.env.MAIL_PASS,
@@ -60,4 +71,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.error("Email error:", error);
     res.status(500).json({ error: "Failed to send message. Please try again later." });
   }
-}
+});
+
+// Global Error Handler
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error("Unhandled Server Error:", err);
+  res.status(500).json({ success: false, error: "Internal Server Error" });
+});
+
+// Export the Express app as a Vercel serverless function
+export default app;
