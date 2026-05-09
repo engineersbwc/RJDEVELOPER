@@ -25,7 +25,7 @@ const Services = () => {
           <h2 className="section-title">Our Professional Services</h2>
         </motion.div>
 
-        <div className="flex items-stretch md:grid overflow-x-auto snap-x snap-mandatory md:overflow-x-visible md:grid-cols-2 lg:grid-cols-3 gap-[20px] md:gap-[28px] pb-6 -mx-6 px-6 md:pb-0 md:mx-0 md:px-0 hide-scrollbar">
+        <div className="flex items-stretch md:grid overflow-x-auto touch-pan-y snap-x snap-mandatory md:overflow-x-visible md:grid-cols-2 lg:grid-cols-3 gap-[20px] md:gap-[28px] pb-6 -mx-6 px-6 md:pb-0 md:mx-0 md:px-0 hide-scrollbar">
           {SERVICES.map((service, index) => (
             <motion.div
               key={service.title}
@@ -34,7 +34,7 @@ const Services = () => {
 
               viewport={{ once: true }}
               transition={{ delay: index * 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative rounded-2xl p-7 flex flex-col h-auto z-10 overflow-hidden cursor-pointer min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center"
+              className="group relative rounded-2xl p-7 flex flex-col h-auto z-10 overflow-hidden cursor-pointer touch-pan-y min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center"
               style={{
                 background: 'rgba(255,255,255,0.04)',
                 backdropFilter: 'blur(20px)',

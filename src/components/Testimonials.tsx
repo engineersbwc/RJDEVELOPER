@@ -18,7 +18,7 @@ const Testimonials = () => {
           <h2 className="text-[32px] md:text-[40px] lg:text-[48px] font-bold text-white">What Our Clients Say</h2>
         </div>
 
-        <div className="flex items-stretch md:grid overflow-x-auto snap-x snap-mandatory md:overflow-x-visible md:grid-cols-3 gap-[24px] md:gap-[32px] pb-6 -mx-6 px-6 md:pb-0 md:mx-0 md:px-0 hide-scrollbar">
+        <div className="flex items-stretch md:grid overflow-x-auto touch-pan-y snap-x snap-mandatory md:overflow-x-visible md:grid-cols-3 gap-[24px] md:gap-[32px] pb-6 -mx-6 px-6 md:pb-0 md:mx-0 md:px-0 hide-scrollbar">
           {TESTIMONIALS.map((t, i) => (
             <motion.div
               key={i}
@@ -27,7 +27,7 @@ const Testimonials = () => {
 
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.5, ease: 'easeOut' }}
-              className="relative rounded-2xl p-8 flex flex-col h-auto min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center"
+              className="relative rounded-2xl p-8 flex flex-col h-auto touch-pan-y min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center"
               style={{
                 background: 'rgba(255,255,255,0.04)',
                 backdropFilter: 'blur(20px)',

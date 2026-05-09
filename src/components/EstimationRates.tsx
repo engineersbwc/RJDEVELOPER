@@ -26,7 +26,7 @@ const EstimationRates = () => {
           </p>
         </motion.div>
 
-        <div className="flex items-stretch md:grid overflow-x-auto snap-x snap-mandatory md:overflow-x-visible md:grid-cols-2 lg:grid-cols-4 gap-[20px] md:gap-[24px] pb-6 -mx-6 px-6 md:pb-0 md:mx-0 md:px-0 hide-scrollbar">
+        <div className="flex items-stretch md:grid overflow-x-auto touch-pan-y snap-x snap-mandatory md:overflow-x-visible md:grid-cols-2 lg:grid-cols-4 gap-[20px] md:gap-[24px] pb-6 -mx-6 px-6 md:pb-0 md:mx-0 md:px-0 hide-scrollbar">
           {ESTIMATION_RATES.map((rate, i) => (
             <motion.div
               key={rate.id}
@@ -35,7 +35,7 @@ const EstimationRates = () => {
 
               viewport={{ once: true }}
               transition={{ delay: i * 0.12, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative rounded-2xl p-6 flex flex-col h-auto group cursor-pointer overflow-hidden min-w-[85vw] sm:min-w-[280px] md:min-w-0 snap-center"
+              className="relative rounded-2xl p-6 flex flex-col h-auto group cursor-pointer overflow-hidden touch-pan-y min-w-[85vw] sm:min-w-[280px] md:min-w-0 snap-center"
               style={{
                 background: 'rgba(255,255,255,0.04)',
                 backdropFilter: 'blur(20px)',
