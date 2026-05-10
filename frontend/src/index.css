@@ -8,9 +8,19 @@
 
   --color-primary: #020617;
   --color-secondary: #0f172a;
-  --color-accent: #f59e0b;
+  --color-accent: #ffb800;
+  --color-accent-glow: rgba(255, 184, 0, 0.4);
   --color-gray-soft: #94a3b8;
   --color-muted: #f8fafc;
+}
+
+@layer utilities {
+  .text-glow {
+    text-shadow: 0 0 15px var(--color-accent-glow);
+  }
+  .accent-border {
+    border-color: rgba(255, 184, 0, 0.2);
+  }
 }
 
 @layer base {
@@ -101,5 +111,16 @@
     /* IE and Edge */
     scrollbar-width: none;
     /* Firefox */
+  }
+
+  /* Fix for browser autofill turning inputs white in dark mode */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #0f172a inset !important;
+    -webkit-text-fill-color: white !important;
+    transition: background-color 5000s ease-in-out 0s;
+    border-radius: 0.75rem !important; /* to match rounded-xl */
   }
 }

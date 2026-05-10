@@ -1,12 +1,15 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const connectDB = require("../config/db");
 const authRoutes = require("../routes/authRoutes");
 const nodemailer = require("nodemailer");
-require("dotenv").config();
+const passport = require("passport");
+require("../config/passportConfig");
 
 const app = express();
+app.use(passport.initialize());
 
 // Allowed origins check removed to dynamically allow all Vercel previews
 app.use(
@@ -41,6 +44,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/auth", authRoutes);
 
 app.post("/api/contact", async (req, res) => {
   const { name, email, phone, sector, address, message } = req.body || {};

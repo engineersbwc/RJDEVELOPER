@@ -237,4 +237,78 @@ const getMe = async (req, res) => {
   }
 };
 
-module.exports = { register, verifyOTP, resendOTP, login, logout, getMe };
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ success: false, error: "Email is required." });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: "Account not found." });
+    }
+
+    const otp = generateOTP();
+    user.otp = otp;
+    user.otpExpiry = new Date(Date.now() + 600000); // 10 minutes expiry
+    await user.save();
+
+    try {
+      await sendEmail({
+        email: user.email,
+        subject: "Reset your RJ Developer password",
+        message: otpEmailHtml(otp, "Reset Password OTP"),
+      });
+    } catch (emailErr) {
+      return res.status(500).json({ success: false, error: "Could not send email. Please try again." });
+    }
+
+    res.status(200).json({ success: true, message: "Reset OTP sent to your email." });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message || "Server error" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ success: false, error: "All fields (email, otp, newPassword) are required." });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ success: false, error: "Password must be at least 6 characters." });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() });
+
+    if (!user) {
+      return res.status(404).json({ success: false, error: "Account not found." });
+    }
+
+    if (!user.otp || user.otp !== otp.toString()) {
+      return res.status(400).json({ success: false, error: "Invalid OTP." });
+    }
+
+    if (!user.otpExpiry || user.otpExpiry < new Date()) {
+      return res.status(400).json({ success: false, error: "OTP has expired." });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+    user.isVerified = true; // Mark as verified if they reset password
+    await user.save();
+
+    res.status(200).json({ success: true, message: "Password reset successful. You can now login." });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message || "Server error" });
+  }
+};
+
+module.exports = { register, verifyOTP, resendOTP, login, logout, getMe, forgotPassword, resetPassword };

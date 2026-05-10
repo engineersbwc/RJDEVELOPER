@@ -20,8 +20,18 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Please add a password"],
+      required: function () { return !this.googleId && !this.facebookId; },
       minlength: 6,
+    },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    facebookId: {
+      type: String,
+      unique: true,
+      sparse: true,
     },
     isVerified: {
       type: Boolean,
