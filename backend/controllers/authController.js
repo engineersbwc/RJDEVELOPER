@@ -12,13 +12,15 @@ const sendTokenResponse = (user, statusCode, res) => {
   const token = generateToken(user._id.toString());
   const cookieExpire = 7 * 24 * 60 * 60 * 1000;
 
+  const isProd = process.env.NODE_ENV === "production";
   res
     .status(statusCode)
     .cookie("token", token, {
       expires: new Date(Date.now() + cookieExpire),
       httpOnly: true,
-      sameSite: "none",
-      secure: true, // Required for sameSite: "none"
+      sameSite: isProd ? "none" : "lax",
+      secure: isProd,
+      path: "/",
     })
     .json({
       success: true,
@@ -216,10 +218,14 @@ const login = async (req, res) => {
 };
 
 const logout = (req, res) => {
+  const isProd = process.env.NODE_ENV === "production";
   res
     .cookie("token", "none", {
       expires: new Date(Date.now() + 5000),
       httpOnly: true,
+      sameSite: isProd ? "none" : "lax",
+      secure: isProd,
+      path: "/",
     })
     .status(200)
     .json({ success: true, message: "Logged out successfully." });
