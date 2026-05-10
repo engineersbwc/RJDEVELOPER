@@ -26,7 +26,11 @@ const API_BASE = isProd
  */
 export const apiFetch = async (path: string, options?: RequestInit) => {
   try {
-    const response = await fetch(`${API_BASE}${path}`, options);
+    const fetchOptions: RequestInit = {
+      ...options,
+      credentials: options?.credentials || 'include',
+    };
+    const response = await fetch(`${API_BASE}${path}`, fetchOptions);
     return response;
   } catch (error) {
     console.error("apiFetch Network Error:", error);

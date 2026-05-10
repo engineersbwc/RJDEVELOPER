@@ -34,7 +34,7 @@ const Services = () => {
               whileHover={{ y: -10 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.15, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="group relative rounded-2xl p-7 flex flex-col h-auto z-10 overflow-hidden cursor-pointer touch-pan-y min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center"
+              className="group relative rounded-2xl p-7 flex flex-col h-auto z-10 overflow-hidden cursor-pointer min-w-[85vw] sm:min-w-[320px] md:min-w-0 snap-center"
               style={{
                 background: 'rgba(255,255,255,0.04)',
                 backdropFilter: 'blur(20px)',

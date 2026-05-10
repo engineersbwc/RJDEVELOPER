@@ -35,7 +35,7 @@ const EstimationRates = () => {
               whileHover={{ y: -10 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.12, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative rounded-2xl p-6 flex flex-col h-auto group cursor-pointer overflow-hidden touch-pan-y min-w-[85vw] sm:min-w-[280px] md:min-w-0 snap-center"
+              className="relative rounded-2xl p-6 flex flex-col h-auto group cursor-pointer overflow-hidden min-w-[85vw] sm:min-w-[280px] md:min-w-0 snap-center"
               style={{
                 background: 'rgba(255,255,255,0.04)',
                 backdropFilter: 'blur(20px)',
