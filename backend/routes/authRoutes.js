@@ -40,18 +40,40 @@ router.get("/logout",           logout);
 router.get("/me",  protect,     getMe);
 
 // ── Google OAuth ───────────────────────────────────────────────────────────
-router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+router.get("/google", (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(400).json({ success: false, error: "Google OAuth is not configured on this server. Please check environment variables." });
+  }
+  passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+});
+
 router.get(
   "/google/callback",
-  passport.authenticate("google", { session: false, failureRedirect: `${process.env.CLIENT_URL}/login` }),
+  (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.status(400).json({ success: false, error: "Google OAuth is not configured." });
+    }
+    passport.authenticate("google", { session: false, failureRedirect: `${process.env.CLIENT_URL}/login` })(req, res, next);
+  },
   oauthRedirect
 );
 
 // ── Facebook OAuth ─────────────────────────────────────────────────────────
-router.get("/facebook", passport.authenticate("facebook", { scope: ["email"] }));
+router.get("/facebook", (req, res, next) => {
+  if (!process.env.FACEBOOK_APP_ID || !process.env.FACEBOOK_APP_SECRET) {
+    return res.status(400).json({ success: false, error: "Facebook OAuth is not configured on this server." });
+  }
+  passport.authenticate("facebook", { scope: ["email"] })(req, res, next);
+});
+
 router.get(
   "/facebook/callback",
-  passport.authenticate("facebook", { session: false, failureRedirect: `${process.env.CLIENT_URL}/login` }),
+  (req, res, next) => {
+    if (!process.env.FACEBOOK_APP_ID || !process.env.FACEBOOK_APP_SECRET) {
+      return res.status(400).json({ success: false, error: "Facebook OAuth is not configured." });
+    }
+    passport.authenticate("facebook", { session: false, failureRedirect: `${process.env.CLIENT_URL}/login` })(req, res, next);
+  },
   oauthRedirect
 );
 
