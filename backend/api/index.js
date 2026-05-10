@@ -31,8 +31,13 @@ app.get("/a", (req, res) => {
 })
 
 app.use(async (req, res, next) => {
-  await connectDB();
-  next();
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    console.error("DB connection error:", err);
+    return res.status(503).json({ success: false, error: "Service unavailable. Could not connect to the database." });
+  }
 });
 
 // Test route as requested by user

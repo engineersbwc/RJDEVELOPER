@@ -7,18 +7,19 @@ const { protect } = require("../middleware/authMiddleware");
 const router = express.Router();
 
 // ── Auth helper: set HttpOnly cookie + redirect ────────────────────────────
+const getFrontendUrl = () => process.env.CLIENT_URL || process.env.FRONTEND_URL || "https://rjdeveloper-tawny.vercel.app";
+
 const oauthRedirect = (req, res) => {
   if (!req.user) {
+    console.error("OAuth redirect called without req.user");
     return res.status(500).json({ success: false, error: "OAuth callback did not return a valid user." });
   }
 
   const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
   const isProd = process.env.NODE_ENV === "production";
   const { _id, name, email } = req.user;
+  const frontendUrl = getFrontendUrl();
 
-  // Set HttpOnly cookie on the BACKEND domain
-  // This cookie travels cross-domain because SameSite=None + Secure (HTTPS)
-  // On localhost (HTTP), we fall back to SameSite=Lax without Secure
   res.cookie("token", token, {
     httpOnly: true,
     sameSite: isProd ? "none" : "lax",
@@ -27,9 +28,7 @@ const oauthRedirect = (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
-  // Pass token, name, email, and id in URL
-  // We switch to localStorage for production stability across different Vercel domains
-  res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${_id}`);
+  res.redirect(`${frontendUrl}/oauth-success?token=${token}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${_id}`);
 };
 
 // ── Standard Auth Routes ───────────────────────────────────────────────────
@@ -56,9 +55,21 @@ router.get(
     if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
       return res.status(400).json({ success: false, error: "Google OAuth is not configured." });
     }
-    passport.authenticate("google", { session: false, failureRedirect: `${process.env.CLIENT_URL}/login` })(req, res, next);
-  },
-  oauthRedirect
+
+    const frontendUrl = getFrontendUrl();
+
+    passport.authenticate("google", { session: false, failureRedirect: `${frontendUrl}/login` }, (err, user, info) => {
+      if (err) {
+        console.error("Google callback error:", err, info);
+        return res.status(500).json({ success: false, error: "Google OAuth error. Check backend logs." });
+      }
+      if (!user) {
+        return res.redirect(`${frontendUrl}/login`);
+      }
+      req.user = user;
+      return oauthRedirect(req, res);
+    })(req, res, next);
+  }
 );
 
 // ── Facebook OAuth ─────────────────────────────────────────────────────────
