@@ -13,8 +13,12 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const googleName = profile.displayName;
-          const googleEmail = profile.emails[0].value;
+          const googleName = profile.displayName || "Google User";
+          const googleEmail = (profile.emails && profile.emails.length > 0) ? profile.emails[0].value : null;
+
+          if (!googleEmail) {
+            return done(new Error("No email found in your Google profile. Please ensure your Google account has an email."), null);
+          }
 
           // Case 1: User already linked with this Google account
           let user = await User.findOne({ googleId: profile.id });
@@ -43,6 +47,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           });
           return done(null, user);
         } catch (err) {
+          console.error("Google Strategy Error:", err);
           return done(err, null);
         }
       }
