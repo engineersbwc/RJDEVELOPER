@@ -7,9 +7,17 @@
 const isProd = import.meta.env.PROD;
 const FALLBACK_BACKEND_URL = 'https://rjdeveloper-jknj.vercel.app';
 
-const API_BASE = import.meta.env.VITE_API_URL 
-  ? import.meta.env.VITE_API_URL 
-  : (isProd ? FALLBACK_BACKEND_URL : '');
+// Read from env
+let envUrl = import.meta.env.VITE_API_URL || '';
+
+// If we are in production but the envUrl is accidentally set to localhost, ignore it
+if (isProd && (envUrl.includes('localhost') || envUrl.includes('127.0.0.1'))) {
+  envUrl = '';
+}
+
+const API_BASE = isProd 
+  ? (envUrl || FALLBACK_BACKEND_URL) 
+  : (envUrl || '');
 
 /**
  * apiFetch — wrapper around fetch that automatically prepends the backend URL.
