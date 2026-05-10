@@ -1,6 +1,6 @@
-import express from "express";
-import { register, login, verifyOTP, resendOTP, logout, getMe } from "../controllers/authController";
-import { protect } from "../middleware/authMiddleware";
+const express = require("express");
+const { register, login, verifyOTP, resendOTP, logout, getMe } = require("../controllers/authController");
+const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
@@ -11,4 +11,4 @@ router.post("/resend-otp", resendOTP);
 router.get("/logout", logout);
 router.get("/me", protect, getMe);
 
-export default router;
+module.exports = router;

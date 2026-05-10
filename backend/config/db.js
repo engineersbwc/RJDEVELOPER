@@ -1,7 +1,6 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
-// Global cache for serverless environments
-let cachedConnection: typeof mongoose | null = null;
+let cachedConnection = null;
 
 const connectDB = async () => {
   if (cachedConnection) {
@@ -14,16 +13,15 @@ const connectDB = async () => {
       throw new Error("MONGO_URI is not defined in environment variables");
     }
 
-    // Connect to MongoDB
     const conn = await mongoose.connect(process.env.MONGO_URI);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
 
     cachedConnection = conn;
     return conn;
-  } catch (error: any) {
+  } catch (error) {
     console.error(`Error connecting to MongoDB: ${error.message}`);
     process.exit(1);
   }
 };
 
-export default connectDB;
+module.exports = connectDB;

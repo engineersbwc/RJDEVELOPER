@@ -1,21 +1,15 @@
-import nodemailer from "nodemailer";
+const nodemailer = require("nodemailer");
 
-interface MailOptions {
-  email: string;
-  subject: string;
-  message: string; // HTML string
-}
-
-const sendEmail = async ({ email, subject, message }: MailOptions) => {
+const sendEmail = async ({ email, subject, message }) => {
   if (!process.env.MAIL_USER || !process.env.MAIL_PASS) {
     throw new Error("SMTP credentials are not configured in .env");
   }
 
   const transporter = nodemailer.createTransport({
     host: process.env.MAIL_HOST || "smtp.gmail.com",
-    port: parseInt(process.env.MAIL_PORT || "587"),
+    port: parseInt(process.env.MAIL_PORT || "587", 10),
     secure: process.env.MAIL_SECURE === "true",
-    connectionTimeout: 10000, // 10 seconds
+    connectionTimeout: 10000,
     greetingTimeout: 10000,
     socketTimeout: 15000,
     auth: {
@@ -32,4 +26,4 @@ const sendEmail = async ({ email, subject, message }: MailOptions) => {
   });
 };
 
-export default sendEmail;
+module.exports = sendEmail;

@@ -1,17 +1,6 @@
-import mongoose, { Document } from "mongoose";
+const mongoose = require("mongoose");
 
-export interface IUser extends Document {
-  name: string;
-  email: string;
-  password: string;
-  isVerified: boolean;
-  otp?: string;
-  otpExpiry?: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-const userSchema = new mongoose.Schema<IUser>(
+const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -52,7 +41,6 @@ const userSchema = new mongoose.Schema<IUser>(
   }
 );
 
-// Delete model cache to prevent OverwriteModelError in hot-reload
-const User = (mongoose.models.User as mongoose.Model<IUser>) || mongoose.model<IUser>("User", userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 
-export default User;
+module.exports = User;
