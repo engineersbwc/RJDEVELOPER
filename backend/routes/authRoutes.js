@@ -8,8 +8,13 @@ const router = express.Router();
 
 // ── Auth helper: set HttpOnly cookie + redirect ────────────────────────────
 const oauthRedirect = (req, res) => {
+  if (!req.user) {
+    return res.status(500).json({ success: false, error: "OAuth callback did not return a valid user." });
+  }
+
   const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
   const isProd = process.env.NODE_ENV === "production";
+  const { _id, name, email } = req.user;
 
   // Set HttpOnly cookie on the BACKEND domain
   // This cookie travels cross-domain because SameSite=None + Secure (HTTPS)
@@ -24,7 +29,7 @@ const oauthRedirect = (req, res) => {
 
   // Pass token, name, email, and id in URL
   // We switch to localStorage for production stability across different Vercel domains
-  res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}&name=${name}&email=${email}&id=${id}`);
+  res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${_id}`);
 };
 
 // ── Standard Auth Routes ───────────────────────────────────────────────────
