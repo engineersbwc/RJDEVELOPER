@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": "./",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "allowJs": true,
+    "resolveJsonModule": true
+  },
+  "include": ["api/**/*", "config/**/*", "controllers/**/*", "middleware/**/*", "models/**/*", "routes/**/*", "utils/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
