@@ -3,52 +3,54 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
 const User = require("../models/User");
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://rjdeveloper-jknj.vercel.app/auth/google/callback",
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      try {
-        const googleName = profile.displayName;
-        const googleEmail = profile.emails[0].value;
+if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL || "https://rjdeveloper-jknj.vercel.app/auth/google/callback",
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          const googleName = profile.displayName;
+          const googleEmail = profile.emails[0].value;
 
-        // Case 1: User already linked with this Google account
-        let user = await User.findOne({ googleId: profile.id });
-        if (user) {
-          // Always sync the latest name from Google
-          user.name = googleName;
-          await user.save();
+          // Case 1: User already linked with this Google account
+          let user = await User.findOne({ googleId: profile.id });
+          if (user) {
+            user.name = googleName;
+            await user.save();
+            return done(null, user);
+          }
+
+          // Case 2: User exists with same email
+          user = await User.findOne({ email: googleEmail });
+          if (user) {
+            user.googleId = profile.id;
+            user.name = googleName;
+            user.isVerified = true;
+            await user.save();
+            return done(null, user);
+          }
+
+          // Case 3: Brand new user
+          user = await User.create({
+            googleId: profile.id,
+            name: googleName,
+            email: googleEmail,
+            isVerified: true,
+          });
           return done(null, user);
+        } catch (err) {
+          return done(err, null);
         }
-
-        // Case 2: User exists with same email (registered with email/password)
-        user = await User.findOne({ email: googleEmail });
-        if (user) {
-          // Link Google account and update name
-          user.googleId = profile.id;
-          user.name = googleName;
-          user.isVerified = true;
-          await user.save();
-          return done(null, user);
-        }
-
-        // Case 3: Brand new user — create account
-        user = await User.create({
-          googleId: profile.id,
-          name: googleName,
-          email: googleEmail,
-          isVerified: true,
-        });
-        return done(null, user);
-      } catch (err) {
-        return done(err, null);
       }
-    }
-  )
-);
+    )
+  );
+} else {
+  console.warn("Google OAuth credentials missing. Google login disabled.");
+}
 
 if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
   passport.use(
