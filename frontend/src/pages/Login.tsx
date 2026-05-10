@@ -212,7 +212,7 @@ const Login = () => {
               <motion.a
                 whileHover={{ scale: 1.02, y: -2, backgroundColor: 'rgba(255, 255, 255, 0.08)' }}
                 whileTap={{ scale: 0.98 }}
-                href={`${API_BASE}/auth/google`}
+                href={`${API_BASE}/api/auth/google`}
                 className="flex items-center justify-center gap-3 bg-white/5 border border-white/10 rounded-xl py-3.5 transition-all shadow-lg shadow-black/20"
               >
                 <svg className="w-5 h-5 drop-shadow-sm" viewBox="0 0 24 24">
