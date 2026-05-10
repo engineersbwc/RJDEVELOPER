@@ -19,8 +19,8 @@ if (isProd && (envUrl.includes('localhost') || envUrl.includes('127.0.0.1'))) {
 const cleanUrl = (url: string) => url.replace(/\/+$/, '');
 
 const API_BASE = isProd 
-  ? cleanUrl(envUrl || FALLBACK_BACKEND_URL) 
-  : cleanUrl(envUrl || '');
+  ? 'https://rjdeveloper-jknj.vercel.app' 
+  : ''; // Use proxy in dev
 
 export const apiFetch = async (path: string, options?: RequestInit) => {
   try {
