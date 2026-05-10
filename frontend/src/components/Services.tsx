@@ -25,7 +25,7 @@ const Services = () => {
           <h2 className="section-title">Our Professional Services</h2>
         </motion.div>
 
-        <div className="flex items-stretch md:grid overflow-x-auto touch-pan-y snap-x snap-mandatory md:overflow-x-visible md:grid-cols-2 lg:grid-cols-3 gap-[20px] md:gap-[28px] pb-6 -mx-6 px-6 md:pb-0 md:mx-0 md:px-0 hide-scrollbar">
+        <div className="flex items-stretch md:grid overflow-x-auto snap-x snap-mandatory md:overflow-x-visible md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-7 pb-8 -mx-6 px-6 md:pb-0 md:mx-0 md:px-0 hide-scrollbar">
           {SERVICES.map((service, index) => (
             <motion.div
               key={service.title}

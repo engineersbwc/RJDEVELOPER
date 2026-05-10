@@ -26,7 +26,7 @@ const EstimationRates = () => {
           </p>
         </motion.div>
 
-        <div className="flex items-stretch md:grid overflow-x-auto touch-pan-y snap-x snap-mandatory md:overflow-x-visible md:grid-cols-2 lg:grid-cols-4 gap-[20px] md:gap-[24px] pb-6 -mx-6 px-6 md:pb-0 md:mx-0 md:px-0 hide-scrollbar">
+        <div className="flex items-stretch md:grid overflow-x-auto snap-x snap-mandatory md:overflow-x-visible md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 pb-8 -mx-6 px-6 md:pb-0 md:mx-0 md:px-0 hide-scrollbar">
           {ESTIMATION_RATES.map((rate, i) => (
             <motion.div
               key={rate.id}

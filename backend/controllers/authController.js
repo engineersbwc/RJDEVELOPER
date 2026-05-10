@@ -17,8 +17,8 @@ const sendTokenResponse = (user, statusCode, res) => {
     .cookie("token", token, {
       expires: new Date(Date.now() + cookieExpire),
       httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      secure: true, // Required for sameSite: "none"
     })
     .json({
       success: true,
