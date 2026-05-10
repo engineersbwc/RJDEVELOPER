@@ -65,6 +65,9 @@ const Login = () => {
       const data = await res.json();
 
       if (data.success) {
+        if (data.token) {
+          localStorage.setItem('token', data.token);
+        }
         login(data.user);
         toast.success('Welcome back!');
         navigate('/');

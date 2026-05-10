@@ -26,9 +26,14 @@ const API_BASE = isProd
  */
 export const apiFetch = async (path: string, options?: RequestInit) => {
   try {
+    const token = localStorage.getItem('token');
     const fetchOptions: RequestInit = {
       ...options,
       credentials: options?.credentials || 'include',
+      headers: {
+        ...options?.headers,
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      }
     };
     const response = await fetch(`${API_BASE}${path}`, fetchOptions);
     return response;

@@ -54,6 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await apiFetch('/api/auth/logout', { credentials: 'include' });
     } catch { /* ignore */ }
+    localStorage.removeItem('token');
     setUser(null);
     toast.success('Logged out successfully.');
   }, []);

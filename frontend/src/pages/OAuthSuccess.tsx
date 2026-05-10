@@ -8,20 +8,26 @@ const OAuthSuccess = () => {
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const name = searchParams.get('name');
-    const id   = searchParams.get('id');
+    const token = searchParams.get('token');
+    const name  = searchParams.get('name');
+    const id    = searchParams.get('id');
 
-    if (!id) {
+    if (!token || !id) {
       toast.error('Login failed. Please try again.');
       window.location.href = '/login';
       return;
     }
 
-    // Show welcome toast before redirect
+    // Save token to localStorage for production stability
+    localStorage.setItem('token', token);
+
+    // Also set cookie as fallback
+    const maxAge = 7 * 24 * 60 * 60; // 7 days
+    document.cookie = `token=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+
     toast.success(`Welcome, ${name || 'User'}! 🎉`);
 
-    // Full page reload so AuthContext re-mounts and reads the HttpOnly cookie
-    // set by the backend in the redirect response
+    // Full page reload so AuthContext reads the token from localStorage
     window.location.href = '/';
   }, [searchParams]);
 

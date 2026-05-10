@@ -22,12 +22,9 @@ const oauthRedirect = (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
-  const name  = encodeURIComponent(req.user.name  || "");
-  const email = encodeURIComponent(req.user.email || "");
-  const id    = req.user._id.toString();
-
-  // Pass name/email/id in URL so frontend can show welcome message instantly
-  res.redirect(`${process.env.CLIENT_URL}/oauth-success?name=${name}&email=${email}&id=${id}`);
+  // Pass token, name, email, and id in URL
+  // We switch to localStorage for production stability across different Vercel domains
+  res.redirect(`${process.env.CLIENT_URL}/oauth-success?token=${token}&name=${name}&email=${email}&id=${id}`);
 };
 
 // ── Standard Auth Routes ───────────────────────────────────────────────────
