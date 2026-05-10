@@ -15,15 +15,13 @@ if (isProd && (envUrl.includes('localhost') || envUrl.includes('127.0.0.1'))) {
   envUrl = '';
 }
 
-const API_BASE = isProd 
-  ? (envUrl || FALLBACK_BACKEND_URL) 
-  : (envUrl || '');
+// Clean URL: Remove trailing slashes to prevent double slashes in paths
+const cleanUrl = (url: string) => url.replace(/\/+$/, '');
 
-/**
- * apiFetch — wrapper around fetch that automatically prepends the backend URL.
- * Automatically catches network errors (e.g., when server is unreachable) 
- * and returns a standard error object instead of crashing the app.
- */
+const API_BASE = isProd 
+  ? cleanUrl(envUrl || FALLBACK_BACKEND_URL) 
+  : cleanUrl(envUrl || '');
+
 export const apiFetch = async (path: string, options?: RequestInit) => {
   try {
     const token = localStorage.getItem('token');
@@ -31,19 +29,24 @@ export const apiFetch = async (path: string, options?: RequestInit) => {
       ...options,
       credentials: options?.credentials || 'include',
       headers: {
+        'Content-Type': 'application/json',
         ...options?.headers,
         ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       }
     };
-    const response = await fetch(`${API_BASE}${path}`, fetchOptions);
+    
+    // Ensure path starts with /
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+    const response = await fetch(`${API_BASE}${normalizedPath}`, fetchOptions);
     return response;
   } catch (error) {
-    console.error(`apiFetch Network Error for ${API_BASE}${path}:`, error);
-    // Return a mock Response object so the components' await res.json() doesn't break
+    // Only log error in console, don't crash or return scary messages to user for background checks
+    console.error(`Connection failed for ${path}:`, error);
+    
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: `Cannot connect to the server at ${API_BASE}. Please check your internet connection or Vercel environment variables.` 
+        error: "Server connection failed. Please try again later." 
       }), 
       { 
         status: 503, 
