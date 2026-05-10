@@ -20,6 +20,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      host: '0.0.0.0',
       hmr: process.env.DISABLE_HMR !== 'true',
       // Dev Proxy: /api requests ko backend pe forward karo
       proxy: {

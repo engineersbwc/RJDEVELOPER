@@ -2,11 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const connectDB = require("../config/db");
-const authRoutes = require("../routes/authRoutes");
+const connectDB = require("./config/db");
+const authRoutes = require("./routes/authRoutes");
 const nodemailer = require("nodemailer");
 const passport = require("passport");
-require("../config/passportConfig");
+require("./config/passportConfig");
 
 const app = express();
 app.use(passport.initialize());
