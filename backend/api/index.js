@@ -100,7 +100,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, error: "Internal Server Error" });
 });
 
-if (process.env.NODE_ENV !== "production") {
+if (!process.env.VERCEL) {
   const PORT = process.env.PORT || 8000;
   app.listen(PORT, () => {
     console.log(`✅ Backend running on http://localhost:${PORT}`);
