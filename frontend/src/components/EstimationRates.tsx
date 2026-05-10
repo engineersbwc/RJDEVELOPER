@@ -32,7 +32,7 @@ const EstimationRates = () => {
               key={rate.id}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
-
+              whileHover={{ y: -10 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.12, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="relative rounded-2xl p-6 flex flex-col h-auto group cursor-pointer overflow-hidden touch-pan-y min-w-[85vw] sm:min-w-[280px] md:min-w-0 snap-center"
