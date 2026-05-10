@@ -38,12 +38,12 @@ export const apiFetch = async (path: string, options?: RequestInit) => {
     const response = await fetch(`${API_BASE}${path}`, fetchOptions);
     return response;
   } catch (error) {
-    console.error("apiFetch Network Error:", error);
+    console.error(`apiFetch Network Error for ${API_BASE}${path}:`, error);
     // Return a mock Response object so the components' await res.json() doesn't break
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: "Cannot connect to the server. Please check your internet connection or try again later." 
+        error: `Cannot connect to the server at ${API_BASE}. Please check your internet connection or Vercel environment variables.` 
       }), 
       { 
         status: 503, 
