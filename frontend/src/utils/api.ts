@@ -205,39 +205,4 @@ export const apiDelete = (path: string, options?: RequestInit) =>
   apiFetch(path, { ...options, method: "DELETE" });
 
 // ── DEFAULT EXPORT FOR BACKWARDS COMPATIBILITY ────────────────────────────
-export default {
-  apiFetch,
-  apiGet,
-  apiPost,
-  apiPut,
-  apiDelete,
-};
-    
-    // Ensure path starts with /
-    const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-    const fullUrl = `${API_BASE}${normalizedPath}`;
-    
-    if (isProd) {
-      console.debug(`📡 API Request: ${fullUrl}`);
-    }
-
-    const response = await fetch(fullUrl, fetchOptions);
-    return response;
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`❌ Connection failed for ${path}:`, message);
-    
-    return new Response(
-      JSON.stringify({ 
-        success: false, 
-        error: "Server connection failed. Please try again later." 
-      }), 
-      { 
-        status: 503, 
-        headers: { 'Content-Type': 'application/json' } 
-      }
-    );
-  }
-};
-
 export default API_BASE;

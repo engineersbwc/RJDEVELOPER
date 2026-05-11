@@ -49,6 +49,30 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        type: "spring", 
+        stiffness: 100,
+        damping: 12,
+      },
+    },
+  };
+
   const set = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm(prev => ({ ...prev, [field]: e.target.value }));
 
@@ -86,16 +110,29 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-slate-950 flex flex-col items-center justify-center p-4 py-12 relative overflow-y-auto">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="min-h-[100dvh] bg-slate-950 flex flex-col items-center justify-center p-4 py-12 relative overflow-y-auto"
+    >
       {/* Animated Orbs */}
       <motion.div 
-        animate={{ scale: [1, 1.1, 1], opacity: [0.15, 0.25, 0.15] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        animate={{ 
+          scale: [1, 1.1, 1], 
+          opacity: [0.15, 0.25, 0.15],
+          rotate: [0, 180, 360]
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         className="pointer-events-none absolute -top-32 -right-32 w-96 h-96 rounded-full blur-3xl bg-accent/20" 
       />
       <motion.div 
-        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.2, 0.1] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        animate={{ 
+          scale: [1, 1.2, 1], 
+          opacity: [0.1, 0.2, 0.1],
+          rotate: [360, 180, 0]
+        }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         className="pointer-events-none absolute -bottom-32 -left-32 w-96 h-96 rounded-full blur-3xl bg-indigo-500" 
       />
 
@@ -147,8 +184,15 @@ const Login = () => {
             <p className="text-white/50 text-sm mb-8">Sign in to your account</p>
           </motion.div>
 
-          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="relative">
+          <motion.form 
+            onSubmit={handleSubmit} 
+            className="space-y-5" 
+            noValidate
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+          >
+            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} variants={itemVariants} className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
               <input
                 type="email"
@@ -160,7 +204,7 @@ const Login = () => {
               />
             </motion.div>
 
-            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="relative">
+            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }} variants={itemVariants} className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
               <input
                 type={showPwd ? 'text' : 'password'}
@@ -179,36 +223,36 @@ const Login = () => {
               </button>
             </motion.div>
 
-            <div className="flex justify-end">
+            <motion.div variants={itemVariants} className="flex justify-end">
               <Link to="/forgot-password" className="text-xs text-accent/60 hover:text-accent hover:underline transition-colors">
                 Forgot password?
               </Link>
-            </div>
+            </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="pt-2">
+            <motion.div variants={itemVariants} className="pt-2">
               <motion.button
-                whileHover={{ scale: 1.02 }}
+                whileHover={{ scale: 1.02, boxShadow: "0 0 40px rgba(255,184,0,0.6)" }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 bg-accent text-slate-900 font-bold rounded-xl py-4 text-sm transition-opacity disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(255,184,0,0.2)] hover:shadow-[0_0_30px_rgba(255,184,0,0.4)]"
+                className="w-full flex items-center justify-center gap-2 bg-accent text-slate-900 font-bold rounded-xl py-4 text-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(255,184,0,0.2)] hover:shadow-[0_0_30px_rgba(255,184,0,0.4)]"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Sign in <LogIn className="w-4 h-4" /></>}
               </motion.button>
             </motion.div>
-          </form>
+          </motion.form>
 
           <div className="mt-8">
-            <div className="relative mb-8">
+            <motion.div variants={itemVariants} className="relative mb-8">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-white/10"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="bg-[#0f172a] px-4 text-white/30">Or continue with</span>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <motion.div variants={itemVariants} className="grid grid-cols-2 gap-4">
               <motion.a
                 whileHover={{ scale: 1.02, y: -2, backgroundColor: 'rgba(255, 255, 255, 0.08)' }}
                 whileTap={{ scale: 0.98 }}
@@ -247,7 +291,7 @@ const Login = () => {
                 </svg>
                 <span className="text-xs font-bold text-white/90">Facebook</span>
               </motion.a>
-            </div>
+            </motion.div>
           </div>
 
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }} className="text-center text-white/50 text-sm mt-8">
@@ -258,7 +302,7 @@ const Login = () => {
           </motion.p>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
