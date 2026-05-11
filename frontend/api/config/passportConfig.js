@@ -6,16 +6,16 @@ const User = require("../models/User");
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   const googleCallbackHost = process.env.GOOGLE_CALLBACK_URL || process.env.BACKEND_URL;
   if (!googleCallbackHost) {
-    throw new Error('GOOGLE_CALLBACK_URL or BACKEND_URL must be configured for Google OAuth callback.');
-  }
-  const googleCallbackPath = process.env.GOOGLE_CALLBACK_URL ? '' : '/google/callback';
-  passport.use(
-    new GoogleStrategy(
-      {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: `${googleCallbackHost.replace(/\/+$/, '')}${googleCallbackPath}`,
-      },
+    console.warn('⚠️ GOOGLE_CALLBACK_URL or BACKEND_URL not set. Google OAuth will not work.');
+  } else {
+    const googleCallbackPath = process.env.GOOGLE_CALLBACK_URL ? '' : '/google/callback';
+    passport.use(
+      new GoogleStrategy(
+        {
+          clientID: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          callbackURL: `${googleCallbackHost.replace(/\/+$/, '')}${googleCallbackPath}`,
+        },
       async (accessToken, refreshToken, profile, done) => {
         try {
           const googleName = profile.displayName || "Google User";
@@ -56,8 +56,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           return done(err, null);
         }
       }
-    )
-  );
+    );
+  }
 } else {
   console.warn("Google OAuth credentials missing. Google login disabled.");
 }
@@ -65,17 +65,17 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
   const facebookCallbackHost = process.env.FACEBOOK_CALLBACK_URL || process.env.BACKEND_URL;
   if (!facebookCallbackHost) {
-    throw new Error('FACEBOOK_CALLBACK_URL or BACKEND_URL must be configured for Facebook OAuth callback.');
-  }
-  const facebookCallbackPath = process.env.FACEBOOK_CALLBACK_URL ? '' : '/facebook/callback';
-  passport.use(
-    new FacebookStrategy(
-      {
-        clientID: process.env.FACEBOOK_APP_ID,
-        clientSecret: process.env.FACEBOOK_APP_SECRET,
-        callbackURL: `${facebookCallbackHost.replace(/\/+$/, '')}${facebookCallbackPath}`,
-        profileFields: ["id", "displayName", "emails"],
-      },
+    console.warn('⚠️ FACEBOOK_CALLBACK_URL or BACKEND_URL not set. Facebook OAuth will not work.');
+  } else {
+    const facebookCallbackPath = process.env.FACEBOOK_CALLBACK_URL ? '' : '/facebook/callback';
+    passport.use(
+      new FacebookStrategy(
+        {
+          clientID: process.env.FACEBOOK_APP_ID,
+          clientSecret: process.env.FACEBOOK_APP_SECRET,
+          callbackURL: `${facebookCallbackHost.replace(/\/+$/, '')}${facebookCallbackPath}`,
+          profileFields: ["id", "displayName", "emails"],
+        },
       async (accessToken, refreshToken, profile, done) => {
         try {
           let user = await User.findOne({ facebookId: profile.id });
@@ -100,8 +100,8 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
           return done(err, null);
         }
       }
-    )
-  );
+    );
+  }
 }
 
 passport.serializeUser((user, done) => {

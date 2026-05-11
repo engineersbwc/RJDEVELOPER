@@ -10,7 +10,8 @@ const router = express.Router();
 const getFrontendUrl = () => {
   const frontendUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL;
   if (!frontendUrl) {
-    throw new Error('FRONTEND_URL or CLIENT_URL must be configured for OAuth redirects.');
+    console.warn('⚠️ FRONTEND_URL or CLIENT_URL not configured. OAuth redirects will fail.');
+    return null;
   }
   return frontendUrl;
 };
@@ -21,10 +22,14 @@ const oauthRedirect = (req, res) => {
     return res.status(500).json({ success: false, error: "OAuth callback did not return a valid user." });
   }
 
+  const frontendUrl = getFrontendUrl();
+  if (!frontendUrl) {
+    return res.status(500).json({ success: false, error: "Server misconfiguration: FRONTEND_URL not set." });
+  }
+
   const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
   const isProd = process.env.NODE_ENV === "production";
   const { _id, name, email } = req.user;
-  const frontendUrl = getFrontendUrl();
 
   res.cookie("token", token, {
     httpOnly: true,

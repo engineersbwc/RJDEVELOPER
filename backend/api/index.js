@@ -15,7 +15,7 @@ app.use(passport.initialize());
 const frontendOrigin = process.env.FRONTEND_URL || process.env.CLIENT_URL;
 
 if (process.env.NODE_ENV === 'production' && !frontendOrigin) {
-  throw new Error('FRONTEND_URL or CLIENT_URL must be set in production for CORS.');
+  console.warn('⚠️ FRONTEND_URL or CLIENT_URL not set in production. CORS may reject requests.');
 }
 
 app.use(
@@ -25,7 +25,7 @@ app.use(
         return callback(null, true);
       }
 
-      if (process.env.NODE_ENV === 'production') {
+      if (process.env.NODE_ENV === 'production' && frontendOrigin) {
         if (origin === frontendOrigin || origin.endsWith('.vercel.app')) {
           return callback(null, true);
         }
