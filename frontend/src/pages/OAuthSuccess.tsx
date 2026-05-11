@@ -39,16 +39,10 @@ const OAuthSuccess = () => {
     login({ id, name: name || 'User', email: email || '' });
     setUserName(name || 'User');
     
-    // Show success state
+    // Redirect immediately without showing extra success text
     setTimeout(() => {
-      setStatus('success');
-      setMessage('Welcome back!');
-      
-      // Final redirect
-      setTimeout(() => {
-        navigate('/', { replace: true });
-      }, 1200);
-    }, 800);
+      navigate('/', { replace: true });
+    }, 500);
 
   }, [searchParams, navigate, login]);
 
@@ -100,29 +94,6 @@ const OAuthSuccess = () => {
                 <div>
                   <h2 className="text-xl font-bold text-white mb-2 font-heading">Verifying Login</h2>
                   <p className="text-white/40 text-sm">{message}</p>
-                </div>
-              </motion.div>
-            )}
-
-            {status === 'success' && (
-              <motion.div
-                key="success"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex flex-col items-center gap-6"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                  className="w-20 h-20 bg-accent rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(255,184,0,0.4)]"
-                >
-                  <CheckCircle2 className="w-10 h-10 text-slate-900" />
-                </motion.div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white mb-2 font-heading">
-                    Welcome, <span className="text-accent">{userName.split(' ')[0]}</span>!
-                  </h2>
                 </div>
               </motion.div>
             )}
