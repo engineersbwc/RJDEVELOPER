@@ -1,26 +1,21 @@
 /**
  * API base URL utility
  * 
- * - Local Dev: Uses '' so that Vite proxy forwards `/api` → `http://localhost:8000/api`
- * - Production: Uses VITE_API_URL from env variables
+ * - Local Dev: Uses '' so that Vite proxy forwards `/api` → backend
+ * - Production: Uses VITE_API_URL from env variables only
  */
 const isProd = import.meta.env.PROD;
 
 // Read from env
-let envUrl = import.meta.env.VITE_API_URL || '';
-
-// If we are in production but the envUrl is accidentally set to localhost, ignore it
-if (isProd && (envUrl.includes('localhost') || envUrl.includes('127.0.0.1'))) {
-  envUrl = '';
-}
+const envUrl = import.meta.env.VITE_API_URL || '';
 
 // Clean URL: Remove trailing slashes to prevent double slashes in paths
 const cleanUrl = (url: string) => url.replace(/\/+$/, '');
 
-const API_BASE = isProd ? cleanUrl(envUrl) : ''; // Use proxy in dev
+const API_BASE = isProd ? cleanUrl(envUrl) : '';
 
 if (isProd && !API_BASE) {
-  console.warn('VITE_API_URL is not set. Production API calls will use relative paths.');
+  throw new Error('VITE_API_URL must be set for production builds. Please configure it in your Vercel environment variables.');
 }
 
 export const apiFetch = async (path: string, options?: RequestInit) => {

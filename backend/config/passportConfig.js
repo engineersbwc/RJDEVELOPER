@@ -4,7 +4,10 @@ const FacebookStrategy = require("passport-facebook").Strategy;
 const User = require("../models/User");
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  const googleCallbackHost = process.env.GOOGLE_CALLBACK_URL || process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 8000}`;
+  const googleCallbackHost = process.env.GOOGLE_CALLBACK_URL || process.env.BACKEND_URL;
+  if (!googleCallbackHost) {
+    throw new Error('GOOGLE_CALLBACK_URL or BACKEND_URL must be set for Google OAuth callback.');
+  }
   const googleCallbackPath = process.env.GOOGLE_CALLBACK_URL ? '' : '/auth/google/callback';
 
   passport.use(
@@ -61,7 +64,10 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 }
 
 if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
-  const facebookCallbackHost = process.env.FACEBOOK_CALLBACK_URL || process.env.BACKEND_URL || `http://localhost:${process.env.PORT || 8000}`;
+  const facebookCallbackHost = process.env.FACEBOOK_CALLBACK_URL || process.env.BACKEND_URL;
+  if (!facebookCallbackHost) {
+    throw new Error('FACEBOOK_CALLBACK_URL or BACKEND_URL must be set for Facebook OAuth callback.');
+  }
   const facebookCallbackPath = process.env.FACEBOOK_CALLBACK_URL ? '' : '/auth/facebook/callback';
 
   passport.use(

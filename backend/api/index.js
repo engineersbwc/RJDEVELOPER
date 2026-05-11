@@ -12,11 +12,11 @@ const app = express();
 app.set('trust proxy', 1);
 app.use(passport.initialize());
 
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  process.env.CLIENT_URL,
-  process.env.BACKEND_URL,
-].filter(Boolean);
+const frontendOrigin = process.env.FRONTEND_URL || process.env.CLIENT_URL;
+
+if (process.env.NODE_ENV === 'production' && !frontendOrigin) {
+  throw new Error('FRONTEND_URL or CLIENT_URL must be set in production for CORS.');
+}
 
 app.use(
   cors({
@@ -25,11 +25,14 @@ app.use(
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-        return callback(null, true);
+      if (process.env.NODE_ENV === 'production') {
+        if (origin === frontendOrigin) {
+          return callback(null, true);
+        }
+        return callback(new Error(`CORS origin not allowed: ${origin}`), false);
       }
 
-      return callback(new Error(`CORS origin not allowed: ${origin}`), false);
+      return callback(null, true);
     },
     credentials: true,
   })
@@ -40,10 +43,15 @@ app.options('*', cors({
     if (!origin) {
       return callback(null, true);
     }
-    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-      return callback(null, true);
+
+    if (process.env.NODE_ENV === 'production') {
+      if (origin === frontendOrigin) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS origin not allowed: ${origin}`), false);
     }
-    return callback(new Error(`CORS origin not allowed: ${origin}`), false);
+
+    return callback(null, true);
   },
   credentials: true,
 }));
@@ -133,7 +141,7 @@ app.use((err, req, res, next) => {
 if (!process.env.VERCEL) {
   const PORT = process.env.PORT || 8000;
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Backend running on http://localhost:${PORT} and http://0.0.0.0:${PORT}`);
+    console.log(`✅ Backend running on port ${PORT}`);
   });
 }
 

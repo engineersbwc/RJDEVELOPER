@@ -9,19 +9,52 @@ const passport = require("passport");
 require("./config/passportConfig");
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(passport.initialize());
 
-// Allowed origins check removed to dynamically allow all Vercel previews
+const frontendOrigin = process.env.FRONTEND_URL || process.env.CLIENT_URL;
+
+if (process.env.NODE_ENV === 'production' && !frontendOrigin) {
+  throw new Error('FRONTEND_URL or CLIENT_URL must be configured in production for CORS.');
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Always allow the origin. This automatically echoes the requesting origin
-      // so that `credentials: true` works correctly across any Vercel domain.
-      callback(null, true);
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (process.env.NODE_ENV === 'production') {
+        if (origin === frontendOrigin) {
+          return callback(null, true);
+        }
+        return callback(new Error(`CORS origin not allowed: ${origin}`), false);
+      }
+
+      return callback(null, true);
     },
     credentials: true,
   })
 );
+
+app.options('*', cors({
+  origin: (origin, callback) => {
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+      if (origin === frontendOrigin) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS origin not allowed: ${origin}`), false);
+    }
+
+    return callback(null, true);
+  },
+  credentials: true,
+}));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -49,6 +82,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/auth", authRoutes);
 
 app.post("/api/contact", async (req, res) => {
   const { name, email, phone, sector, address, message } = req.body || {};
@@ -107,7 +141,7 @@ app.use((err, req, res, next) => {
 if (!process.env.VERCEL) {
   const PORT = process.env.PORT || 8000;
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Backend running on http://localhost:${PORT} and http://0.0.0.0:${PORT}`);
+    console.log(`✅ Frontend API server running on port ${PORT}`);
   });
 }
 

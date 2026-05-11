@@ -7,7 +7,13 @@ const { protect } = require("../middleware/authMiddleware");
 const router = express.Router();
 
 // ── Auth helper: set HttpOnly cookie + redirect ────────────────────────────
-const getFrontendUrl = () => process.env.FRONTEND_URL || process.env.CLIENT_URL || "http://localhost:5173";
+const getFrontendUrl = () => {
+  const frontendUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL;
+  if (!frontendUrl) {
+    throw new Error('FRONTEND_URL or CLIENT_URL must be configured for OAuth redirects.');
+  }
+  return frontendUrl;
+};
 
 const oauthRedirect = (req, res) => {
   if (!req.user) {
