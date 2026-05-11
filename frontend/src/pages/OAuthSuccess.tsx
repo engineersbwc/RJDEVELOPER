@@ -124,7 +124,6 @@ const OAuthSuccess = () => {
                   <h2 className="text-2xl font-bold text-white mb-2 font-heading">
                     Welcome, <span className="text-accent">{userName.split(' ')[0]}</span>!
                   </h2>
-                  <p className="text-white/60">Successfully authenticated via Google</p>
                 </div>
               </motion.div>
             )}
