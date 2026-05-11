@@ -33,10 +33,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const checkAuth = async () => {
       try {
         const res = await apiFetch('/api/auth/me', { credentials: 'include' });
-        if (!res.ok) { setUser(null); return; }
+        if (!res.ok) {
+          localStorage.removeItem('token');
+          if (!cancelled) setUser(null);
+          return;
+        }
         const data = await res.json();
         if (!cancelled) setUser(data.success ? { id: data.data._id, name: data.data.name, email: data.data.email } : null);
       } catch {
+        localStorage.removeItem('token');
         if (!cancelled) setUser(null);
       } finally {
         if (!cancelled) setLoading(false);

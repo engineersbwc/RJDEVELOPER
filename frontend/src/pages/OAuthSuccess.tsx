@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Loader2 } from 'lucide-react';
@@ -6,29 +6,36 @@ import toast from 'react-hot-toast';
 
 const OAuthSuccess = () => {
   const [searchParams] = useSearchParams();
+  const [status, setStatus] = useState('Signing you in...');
 
   useEffect(() => {
     const token = searchParams.get('token');
-    const name  = searchParams.get('name');
-    const id    = searchParams.get('id');
+    const name = searchParams.get('name');
+    const id = searchParams.get('id');
 
     if (!token || !id) {
+      setStatus('Login failed. Redirecting to sign in...');
       toast.error('Login failed. Please try again.');
-      window.location.href = '/login';
+      window.setTimeout(() => {
+        window.location.replace('/login');
+      }, 1500);
       return;
     }
 
-    // Save token to localStorage for production stability
+    // Save token to localStorage for client-side persistence.
     localStorage.setItem('token', token);
 
-    // Also set cookie as fallback
+    // Also set a browser-level cookie for compatibility with mobile browsers.
     const maxAge = 7 * 24 * 60 * 60; // 7 days
-    document.cookie = `token=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+    const isSecure = window.location.protocol === 'https:';
+    document.cookie = `token=${token}; path=/; max-age=${maxAge}; SameSite=None; ${isSecure ? 'Secure;' : ''}`;
 
+    setStatus(`Welcome back, ${name || 'User'}! Redirecting…`);
     toast.success(`Welcome, ${name || 'User'}! 🎉`);
 
-    // Full page reload so AuthContext reads the token from localStorage
-    window.location.href = '/';
+    window.setTimeout(() => {
+      window.location.replace('/');
+    }, 800);
   }, [searchParams]);
 
   return (
@@ -45,8 +52,8 @@ const OAuthSuccess = () => {
           <Loader2 className="w-12 h-12 text-accent" />
         </motion.div>
         <div className="text-center">
-          <p className="text-white font-semibold text-lg mb-1">Signing you in...</p>
-          <p className="text-white/40 text-sm">Please wait a moment</p>
+          <p className="text-white font-semibold text-lg mb-1">{status}</p>
+          <p className="text-white/40 text-sm">Please wait a moment while we verify your login.</p>
         </div>
       </motion.div>
     </div>

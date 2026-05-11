@@ -7,7 +7,7 @@ const { protect } = require("../middleware/authMiddleware");
 const router = express.Router();
 
 // ── Auth helper: set HttpOnly cookie + redirect ────────────────────────────
-const getFrontendUrl = () => process.env.CLIENT_URL || process.env.FRONTEND_URL || "https://rjdeveloper-tawny.vercel.app";
+const getFrontendUrl = () => process.env.FRONTEND_URL || process.env.CLIENT_URL || "http://localhost:5173";
 
 const oauthRedirect = (req, res) => {
   if (!req.user) {

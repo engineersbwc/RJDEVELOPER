@@ -2,10 +2,9 @@
  * API base URL utility
  * 
  * - Local Dev: Uses '' so that Vite proxy forwards `/api` → `http://localhost:8000/api`
- * - Production: Uses VITE_API_URL or the hardcoded deployed backend URL
+ * - Production: Uses VITE_API_URL from env variables
  */
 const isProd = import.meta.env.PROD;
-const FALLBACK_BACKEND_URL = 'https://rjdeveloper-jknj.vercel.app';
 
 // Read from env
 let envUrl = import.meta.env.VITE_API_URL || '';
@@ -18,9 +17,11 @@ if (isProd && (envUrl.includes('localhost') || envUrl.includes('127.0.0.1'))) {
 // Clean URL: Remove trailing slashes to prevent double slashes in paths
 const cleanUrl = (url: string) => url.replace(/\/+$/, '');
 
-const API_BASE = isProd 
-  ? cleanUrl(envUrl || FALLBACK_BACKEND_URL)
-  : ''; // Use proxy in dev
+const API_BASE = isProd ? cleanUrl(envUrl) : ''; // Use proxy in dev
+
+if (isProd && !API_BASE) {
+  console.warn('VITE_API_URL is not set. Production API calls will use relative paths.');
+}
 
 export const apiFetch = async (path: string, options?: RequestInit) => {
   try {

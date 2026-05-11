@@ -7,7 +7,7 @@ const { protect } = require("../middleware/authMiddleware");
 const router = express.Router();
 
 // ── Auth helper: set HttpOnly cookie + redirect ────────────────────────────
-const getFrontendUrl = () => process.env.CLIENT_URL || process.env.FRONTEND_URL || "https://rjdeveloper-tawny.vercel.app";
+const getFrontendUrl = () => process.env.FRONTEND_URL || process.env.CLIENT_URL || "http://localhost:5173";
 
 const oauthRedirect = (req, res) => {
   if (!req.user) {
@@ -86,7 +86,8 @@ router.get(
     if (!process.env.FACEBOOK_APP_ID || !process.env.FACEBOOK_APP_SECRET) {
       return res.status(400).json({ success: false, error: "Facebook OAuth is not configured." });
     }
-    passport.authenticate("facebook", { session: false, failureRedirect: `${process.env.CLIENT_URL}/login` })(req, res, next);
+    const frontendUrl = getFrontendUrl();
+    passport.authenticate("facebook", { session: false, failureRedirect: `${frontendUrl}/login` })(req, res, next);
   },
   oauthRedirect
 );

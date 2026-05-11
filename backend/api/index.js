@@ -9,19 +9,44 @@ const passport = require("passport");
 require("../config/passportConfig");
 
 const app = express();
+app.set('trust proxy', 1);
 app.use(passport.initialize());
 
-// Allowed origins check removed to dynamically allow all Vercel previews
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL,
+  process.env.BACKEND_URL,
+].filter(Boolean);
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Always allow the origin. This automatically echoes the requesting origin
-      // so that `credentials: true` works correctly across any Vercel domain.
-      callback(null, true);
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS origin not allowed: ${origin}`), false);
     },
     credentials: true,
   })
 );
+
+app.options('*', cors({
+  origin: (origin, callback) => {
+    if (!origin) {
+      return callback(null, true);
+    }
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS origin not allowed: ${origin}`), false);
+  },
+  credentials: true,
+}));
 
 app.use(express.json());
 app.use(cookieParser());
