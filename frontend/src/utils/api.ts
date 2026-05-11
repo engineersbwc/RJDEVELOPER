@@ -14,12 +14,29 @@ const cleanUrl = (url: string) => url.replace(/\/+$/, '');
 
 const API_BASE = isProd ? cleanUrl(envUrl) : '';
 
-if (isProd && !API_BASE) {
-  throw new Error('VITE_API_URL must be set for production builds. Please configure it in your Vercel environment variables.');
+// Production validation and logging
+if (isProd) {
+  if (!API_BASE) {
+    console.error(
+      '❌ VITE_API_URL is not configured!\n' +
+      'Please set it in your Vercel project Settings > Environment Variables\n' +
+      'Example: VITE_API_URL=https://your-backend.vercel.app'
+    );
+  } else {
+    console.log(`✅ API Base URL configured: ${API_BASE}`);
+  }
 }
 
 export const apiFetch = async (path: string, options?: RequestInit) => {
   try {
+    // Validate API_BASE in production
+    if (isProd && !API_BASE) {
+      throw new Error(
+        'VITE_API_URL environment variable is not set. ' +
+        'Configure it in Vercel project settings.'
+      );
+    }
+
     const token = localStorage.getItem('token');
     const fetchOptions: RequestInit = {
       ...options,
@@ -33,11 +50,17 @@ export const apiFetch = async (path: string, options?: RequestInit) => {
     
     // Ensure path starts with /
     const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-    const response = await fetch(`${API_BASE}${normalizedPath}`, fetchOptions);
+    const fullUrl = `${API_BASE}${normalizedPath}`;
+    
+    if (isProd) {
+      console.debug(`📡 API Request: ${fullUrl}`);
+    }
+
+    const response = await fetch(fullUrl, fetchOptions);
     return response;
   } catch (error) {
-    // Only log error in console, don't crash or return scary messages to user for background checks
-    console.error(`Connection failed for ${path}:`, error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`❌ Connection failed for ${path}:`, message);
     
     return new Response(
       JSON.stringify({ 
