@@ -125,10 +125,6 @@ const OAuthSuccess = () => {
                     Welcome, <span className="text-accent">{userName.split(' ')[0]}</span>!
                   </h2>
                   <p className="text-white/60">Successfully authenticated via Google</p>
-                  <div className="mt-6 flex items-center justify-center gap-2 text-xs text-white/30">
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    Redirecting to home...
-                  </div>
                 </div>
               </motion.div>
             )}
