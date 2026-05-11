@@ -58,7 +58,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
           }
         }
       )
-    )
+    );
   }
 } else {
   console.warn("Google OAuth credentials missing. Google login disabled.");
@@ -84,6 +84,10 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
             let user = await User.findOne({ facebookId: profile.id });
 
             if (!user) {
+              if (!profile.emails || profile.emails.length === 0) {
+                return done(new Error("No email found in your Facebook profile."), null);
+              }
+              
               user = await User.findOne({ email: profile.emails[0].value });
               if (user) {
                 user.facebookId = profile.id;
@@ -100,10 +104,12 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
             }
             return done(null, user);
           } catch (err) {
+            console.error("Facebook Strategy Error:", err);
             return done(err, null);
           }
         }
-      ));
+      )
+    );
   }
 }
 
