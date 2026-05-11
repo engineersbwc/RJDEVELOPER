@@ -3,129 +3,185 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
 const User = require("../models/User");
 
+// ── GOOGLE OAUTH SETUP ───────────────────────────────────────────────────
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  const googleCallbackHost = process.env.GOOGLE_CALLBACK_URL || process.env.BACKEND_URL;
-  
-  if (!googleCallbackHost) {
-    console.warn('⚠️ GOOGLE_CALLBACK_URL or BACKEND_URL not set. Google OAuth will not work correctly.');
+  // Build callback URL - MUST match the one registered in Google Console
+  // Priority: explicit URL > build from BACKEND_URL > use default
+  let callbackURL = process.env.GOOGLE_CALLBACK_URL;
+
+  if (!callbackURL && process.env.BACKEND_URL) {
+    // Build from BACKEND_URL (e.g., https://backend.vercel.app)
+    const baseUrl = process.env.BACKEND_URL.replace(/\/+$/, "");
+    callbackURL = `${baseUrl}/api/auth/google/callback`;
   }
 
-  // Use the provided GOOGLE_CALLBACK_URL or build one using BACKEND_URL
-  // Standardizing on /api/auth/google/callback as the reliable path
-  const callbackURL = process.env.GOOGLE_CALLBACK_URL || 
-    `${googleCallbackHost?.replace(/\/+$/, '')}/api/auth/google/callback`;
-
-  console.log(`📡 Registering Google Strategy. Callback URL: ${callbackURL}`);
-
-  passport.use(
-    new GoogleStrategy(
-      {
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: callbackURL,
-        proxy: true // Required for Vercel/proxied environments
-      },
-      async (accessToken, refreshToken, profile, done) => {
-        try {
-          console.log(`🔑 Google Auth triggered for: ${profile.emails?.[0]?.value}`);
-          
-          const googleName = profile.displayName || "Google User";
-          const googleEmail = (profile.emails && profile.emails.length > 0) ? profile.emails[0].value : null;
-
-          if (!googleEmail) {
-            console.error("❌ No email found in Google profile");
-            return done(new Error("No email found in your Google profile. Please ensure your Google account has an email."), null);
-          }
-
-          // Case 1: User already linked with this Google account
-          let user = await User.findOne({ googleId: profile.id });
-          if (user) {
-            console.log("✅ User found via Google ID");
-            user.name = googleName;
-            await user.save();
-            return done(null, user);
-          }
-
-          // Case 2: User exists with same email
-          user = await User.findOne({ email: googleEmail });
-          if (user) {
-            console.log("✅ User found via Email, linking Google ID");
-            user.googleId = profile.id;
-            user.name = googleName;
-            user.isVerified = true;
-            await user.save();
-            return done(null, user);
-          }
-
-          // Case 3: Brand new user
-          console.log("🆕 Creating new user from Google profile");
-          user = await User.create({
-            googleId: profile.id,
-            name: googleName,
-            email: googleEmail,
-            isVerified: true,
-          });
-          return done(null, user);
-        } catch (err) {
-          console.error("❌ Google Strategy Error:", err.message);
-          return done(err, null);
-        }
-      }
-    )
-  );
-} else {
-  console.warn("⚠️ Google OAuth credentials missing. Google login disabled.");
-}
-
-if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
-  const facebookCallbackHost = process.env.FACEBOOK_CALLBACK_URL || process.env.BACKEND_URL;
-  if (!facebookCallbackHost) {
-    console.warn('⚠️ FACEBOOK_CALLBACK_URL or BACKEND_URL not set. Facebook OAuth will not work.');
+  if (!callbackURL) {
+    console.error(
+      "🚨 CRITICAL: Google OAuth callback URL not configured!\n" +
+      "Set either GOOGLE_CALLBACK_URL or BACKEND_URL in environment variables.\n" +
+      "This URL must match the one registered in Google OAuth Console.\n" +
+      "Example: GOOGLE_CALLBACK_URL=https://backend.vercel.app/api/auth/google/callback"
+    );
   } else {
-    const facebookCallbackPath = process.env.FACEBOOK_CALLBACK_URL ? '' : '/api/auth/facebook/callback';
+    console.log(`📡 Google OAuth Strategy registered with callback: ${callbackURL}`);
 
     passport.use(
-      new FacebookStrategy(
+      new GoogleStrategy(
         {
-          clientID: process.env.FACEBOOK_APP_ID,
-          clientSecret: process.env.FACEBOOK_APP_SECRET,
-          callbackURL: `${facebookCallbackHost.replace(/\/+$/, '')}${facebookCallbackPath}`,
-          profileFields: ["id", "displayName", "emails"],
+          clientID: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          callbackURL,
+          proxy: true, // Required for Vercel and proxied environments
         },
         async (accessToken, refreshToken, profile, done) => {
           try {
-            let user = await User.findOne({ facebookId: profile.id });
+            const googleEmail = profile.emails?.[0]?.value;
+            const googleName = profile.displayName || "User";
 
-            if (!user) {
-              if (!profile.emails || profile.emails.length === 0) {
-                return done(new Error("No email found in your Facebook profile."), null);
-              }
-              
-              user = await User.findOne({ email: profile.emails[0].value });
-              if (user) {
-                user.facebookId = profile.id;
-                user.name = profile.displayName;
-                await user.save();
-              } else {
-                user = await User.create({
-                  facebookId: profile.id,
-                  name: profile.displayName,
-                  email: profile.emails[0].value,
-                  isVerified: true,
-                });
-              }
+            if (!googleEmail) {
+              return done(
+                new Error(
+                  "No email found in your Google profile. " +
+                  "Please ensure your Google account has a verified email address."
+                ),
+                null
+              );
             }
+
+            console.log(`🔑 Google Auth: Processing ${googleEmail}`);
+
+            // Case 1: User already exists with this Google ID
+            let user = await User.findOne({ googleId: profile.id });
+            if (user) {
+              console.log(`✅ Google user found: ${googleEmail}`);
+              user.name = googleName; // Update name in case it changed
+              await user.save();
+              return done(null, user);
+            }
+
+            // Case 2: User exists with same email
+            user = await User.findOne({ email: googleEmail });
+            if (user) {
+              console.log(`✅ Email exists, linking Google ID: ${googleEmail}`);
+              user.googleId = profile.id;
+              user.name = googleName;
+              user.isVerified = true;
+              await user.save();
+              return done(null, user);
+            }
+
+            // Case 3: New user
+            console.log(`🆕 Creating new user from Google: ${googleEmail}`);
+            user = await User.create({
+              googleId: profile.id,
+              name: googleName,
+              email: googleEmail,
+              isVerified: true,
+            });
+
             return done(null, user);
           } catch (err) {
-            console.error("Facebook Strategy Error:", err);
+            console.error("❌ Google Strategy Error:", err.message);
             return done(err, null);
           }
         }
       )
     );
   }
+} else {
+  if (process.env.NODE_ENV === "production") {
+    console.warn("⚠️ Google OAuth credentials missing - Google login disabled");
+  }
 }
 
+// ── FACEBOOK OAUTH SETUP ─────────────────────────────────────────────────
+if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+  // Build Facebook callback URL
+  let facebookCallbackURL = process.env.FACEBOOK_CALLBACK_URL;
+
+  if (!facebookCallbackURL && process.env.BACKEND_URL) {
+    const baseUrl = process.env.BACKEND_URL.replace(/\/+$/, "");
+    facebookCallbackURL = `${baseUrl}/api/auth/facebook/callback`;
+  }
+
+  if (!facebookCallbackURL) {
+    console.error(
+      "🚨 CRITICAL: Facebook OAuth callback URL not configured!\n" +
+      "Set either FACEBOOK_CALLBACK_URL or BACKEND_URL in environment variables."
+    );
+  } else {
+    console.log(`📡 Facebook OAuth Strategy registered with callback: ${facebookCallbackURL}`);
+
+    passport.use(
+      new FacebookStrategy(
+        {
+          clientID: process.env.FACEBOOK_APP_ID,
+          clientSecret: process.env.FACEBOOK_APP_SECRET,
+          callbackURL: facebookCallbackURL,
+          profileFields: ["id", "displayName", "emails"],
+        },
+        async (accessToken, refreshToken, profile, done) => {
+          try {
+            const facebookEmail = profile.emails?.[0]?.value;
+            const facebookName = profile.displayName || "User";
+
+            if (!facebookEmail) {
+              return done(
+                new Error(
+                  "No email found in your Facebook profile. " +
+                  "Please ensure your account has a verified email address."
+                ),
+                null
+              );
+            }
+
+            console.log(`🔑 Facebook Auth: Processing ${facebookEmail}`);
+
+            // Case 1: User exists with this Facebook ID
+            let user = await User.findOne({ facebookId: profile.id });
+            if (user) {
+              console.log(`✅ Facebook user found: ${facebookEmail}`);
+              user.name = facebookName;
+              await user.save();
+              return done(null, user);
+            }
+
+            // Case 2: User exists with same email
+            user = await User.findOne({ email: facebookEmail });
+            if (user) {
+              console.log(`✅ Email exists, linking Facebook ID: ${facebookEmail}`);
+              user.facebookId = profile.id;
+              user.name = facebookName;
+              user.isVerified = true;
+              await user.save();
+              return done(null, user);
+            }
+
+            // Case 3: New user
+            console.log(`🆕 Creating new user from Facebook: ${facebookEmail}`);
+            user = await User.create({
+              facebookId: profile.id,
+              name: facebookName,
+              email: facebookEmail,
+              isVerified: true,
+            });
+
+            return done(null, user);
+          } catch (err) {
+            console.error("❌ Facebook Strategy Error:", err.message);
+            return done(err, null);
+          }
+        }
+      )
+    );
+  }
+} else {
+  if (process.env.NODE_ENV === "production") {
+    console.warn("⚠️ Facebook OAuth credentials missing - Facebook login disabled");
+  }
+}
+
+// ── PASSPORT SERIALIZATION ──────────────────────────────────────────────
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });

@@ -1,17 +1,26 @@
 {
   "version": 2,
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/auth/(.*)",
-      "destination": "/api/index.js"
-    },
-    {
-      "source": "/((?!api|auth).*)",
-      "destination": "/api/index.js"
+      "src": "api/index.js",
+      "use": "@vercel/node@^3.0.0",
+      "config": {
+        "maxLambdaSize": "50mb",
+        "memorySize": 1024,
+        "includeFiles": "config/**",
+        "excludeFiles": "node_modules/**"
+      }
     }
+  ],
+  "functions": {
+    "api/index.js": {
+      "maxDuration": 60,
+      "memory": 1024
+    }
+  },
+  "routes": [
+    { "src": "/api/(.*)", "dest": "api/index.js" },
+    { "src": "/auth/(.*)", "dest": "api/index.js" },
+    { "src": "/health", "dest": "api/index.js" }
   ]
 }
