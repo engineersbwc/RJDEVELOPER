@@ -24,9 +24,9 @@ const CeoMessage = () => {
               />
               <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(2,6,23,0.85) 0%, transparent 40%)' }} />
               
-              <div className="absolute bottom-0 left-0 w-full p-6 text-center lg:hidden">
-                <h3 className="text-white text-2xl font-heading font-bold">Engr Rashid Mehmood</h3>
-                <p className="text-accent font-medium">CEO & Founder</p>
+              <div className="absolute bottom-0 left-0 w-full p-4 pb-6 text-center lg:hidden">
+                <h3 className="text-white text-lg sm:text-xl font-heading font-bold whitespace-nowrap">Engr Rashid Mehmood</h3>
+                <p className="text-accent text-sm font-medium">CEO & Founder</p>
               </div>
             </div>
             
