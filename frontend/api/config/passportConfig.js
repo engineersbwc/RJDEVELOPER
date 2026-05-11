@@ -8,7 +8,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   if (!googleCallbackHost) {
     throw new Error('GOOGLE_CALLBACK_URL or BACKEND_URL must be configured for Google OAuth callback.');
   }
-  const googleCallbackPath = process.env.GOOGLE_CALLBACK_URL ? '' : '/api/auth/google/callback';
+  const googleCallbackPath = process.env.GOOGLE_CALLBACK_URL ? '' : '/google/callback';
   passport.use(
     new GoogleStrategy(
       {
@@ -67,7 +67,7 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
   if (!facebookCallbackHost) {
     throw new Error('FACEBOOK_CALLBACK_URL or BACKEND_URL must be configured for Facebook OAuth callback.');
   }
-  const facebookCallbackPath = process.env.FACEBOOK_CALLBACK_URL ? '' : '/auth/facebook/callback';
+  const facebookCallbackPath = process.env.FACEBOOK_CALLBACK_URL ? '' : '/facebook/callback';
   passport.use(
     new FacebookStrategy(
       {

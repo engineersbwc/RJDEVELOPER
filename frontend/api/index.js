@@ -26,7 +26,7 @@ app.use(
       }
 
       if (process.env.NODE_ENV === 'production') {
-        if (origin === frontendOrigin) {
+        if (origin === frontendOrigin || origin.endsWith('.vercel.app')) {
           return callback(null, true);
         }
         return callback(new Error(`CORS origin not allowed: ${origin}`), false);
