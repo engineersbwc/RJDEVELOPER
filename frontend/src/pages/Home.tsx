@@ -7,6 +7,7 @@ import Projects from '../components/Projects';
 import Contact from '../components/Contact';
 import Footer from '../components/Footer';
 import Navbar from '../components/Navbar';
+import CeoMessage from '../components/CeoMessage';
 
 const Home = () => {
   return (
@@ -14,6 +15,7 @@ const Home = () => {
       <Navbar />
       <Hero />
       <About />
+      <CeoMessage />
       <Services />
       <EstimationRates />
       <Projects />
