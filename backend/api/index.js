@@ -45,7 +45,8 @@ app.set("trust proxy", 1);
 app.use(passport.initialize());
 
 // Detect environment
-const isProd = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+const isProd = process.env.VERCEL === "1";
+console.log(`VERCEL env: ${process.env.VERCEL}, isProd: ${isProd}`);
 const frontendOrigin = process.env.FRONTEND_URL || process.env.CLIENT_URL;
 
 // Build allowed origins with proper validation
