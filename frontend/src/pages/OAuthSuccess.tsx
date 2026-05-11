@@ -43,7 +43,6 @@ const OAuthSuccess = () => {
     setTimeout(() => {
       setStatus('success');
       setMessage('Welcome back!');
-      toast.success(`Logged in as ${name || 'User'}`, { icon: '🎉' });
       
       // Final redirect
       setTimeout(() => {
