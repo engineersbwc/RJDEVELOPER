@@ -2,82 +2,64 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const connectDB = require("./config/db");
-const authRoutes = require("./routes/authRoutes");
+const connectDB = require("./config/db.cjs");
+const authRoutes = require("./routes/authRoutes.cjs");
 const nodemailer = require("nodemailer");
 const passport = require("passport");
-require("./config/passportConfig");
+require("./config/passportConfig.cjs");
 
 const app = express();
 app.set('trust proxy', 1);
 app.use(passport.initialize());
 
 const frontendOrigin = process.env.FRONTEND_URL || process.env.CLIENT_URL;
-
-if (process.env.NODE_ENV === 'production' && !frontendOrigin) {
-  console.warn('⚠️ FRONTEND_URL or CLIENT_URL not set in production. CORS may reject requests.');
-}
+const allowedOrigins = [frontendOrigin].filter(Boolean);
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) {
-        return callback(null, true);
-      }
-
+      if (!origin) return callback(null, true);
+      
       if (process.env.NODE_ENV === 'production') {
-        if (origin === frontendOrigin || origin.endsWith('.vercel.app')) {
-          return callback(null, true);
+        const isAllowed = allowedOrigins.includes(origin) || origin.endsWith('.vercel.app');
+        if (isAllowed) {
+          callback(null, true);
+        } else {
+          console.warn(`Blocked by CORS: ${origin}`);
+          callback(new Error('Not allowed by CORS'));
         }
-        return callback(new Error(`CORS origin not allowed: ${origin}`), false);
+      } else {
+        callback(null, true);
       }
-
-      return callback(null, true);
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
   })
 );
-
-app.options('*', cors({
-  origin: (origin, callback) => {
-    if (!origin) {
-      return callback(null, true);
-    }
-
-    if (process.env.NODE_ENV === 'production') {
-      if (origin === frontendOrigin) {
-        return callback(null, true);
-      }
-      return callback(new Error(`CORS origin not allowed: ${origin}`), false);
-    }
-
-    return callback(null, true);
-  },
-  credentials: true,
-}));
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.get("/a", (req, res) => {
-  res.send("Hello")
-})
 
 app.use(async (req, res, next) => {
+  if (req.path === '/api/health') return next();
   try {
     await connectDB();
     next();
   } catch (err) {
-    console.error("DB connection error:", err);
-    return res.status(503).json({ success: false, error: "Service unavailable. Could not connect to the database." });
+    console.error("Critical: Database connection failed:", err.message);
+    res.status(503).json({ 
+      success: false, 
+      error: "Database connection failed. Please check if your IP is whitelisted in MongoDB Atlas."
+    });
   }
 });
 
-// Test route as requested by user
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Backend Running Successfully"
+    message: "Frontend API Running Successfully"
   });
 });
 
@@ -96,8 +78,6 @@ app.post("/api/contact", async (req, res) => {
     port: parseInt(process.env.MAIL_PORT || "587", 10),
     secure: process.env.MAIL_SECURE === "true",
     connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
     auth: {
       user: process.env.MAIL_USER,
       pass: process.env.MAIL_PASS,
@@ -134,14 +114,17 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error("Unhandled Server Error:", err);
-  res.status(500).json({ success: false, error: "Internal Server Error" });
+  console.error("Unhandled Error Stack:", err.stack);
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).json({ success: false, error: "CORS error: Origin not allowed." });
+  }
+  res.status(err.status || 500).json({ success: false, error: err.message || "Internal Server Error" });
 });
 
 if (!process.env.VERCEL) {
-  const PORT = process.env.PORT || 8000;
+  const PORT = process.env.PORT || 8001; // Use different port for frontend API if local
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Frontend API server running on port ${PORT}`);
+    console.log(`✅ Frontend API running on port ${PORT}`);
   });
 }
 

@@ -1,7 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
-const sendEmail = require("../utils/sendEmail");
+const User = require("../models/User.cjs");
+const sendEmail = require("../utils/sendEmail.cjs");
 
 const generateToken = (id) =>
   jwt.sign({ id }, process.env.JWT_SECRET, {

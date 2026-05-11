@@ -1,8 +1,8 @@
 const express = require("express");
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
-const { register, login, verifyOTP, resendOTP, logout, getMe, forgotPassword, resetPassword } = require("../controllers/authController");
-const { protect } = require("../middleware/authMiddleware");
+const { register, login, verifyOTP, resendOTP, logout, getMe, forgotPassword, resetPassword } = require("../controllers/authController.cjs");
+const { protect } = require("../middleware/authMiddleware.cjs");
 
 const router = express.Router();
 

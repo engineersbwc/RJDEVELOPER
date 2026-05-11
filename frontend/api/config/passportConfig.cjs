@@ -1,14 +1,14 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
-const User = require("../models/User");
+const User = require("../models/User.cjs");
 
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   const googleCallbackHost = process.env.GOOGLE_CALLBACK_URL || process.env.BACKEND_URL;
   if (!googleCallbackHost) {
     console.warn('⚠️ GOOGLE_CALLBACK_URL or BACKEND_URL not set. Google OAuth will not work.');
   } else {
-    const googleCallbackPath = process.env.GOOGLE_CALLBACK_URL ? '' : '/google/callback';
+    const googleCallbackPath = process.env.GOOGLE_CALLBACK_URL ? '' : '/api/auth/google/callback';
     passport.use(
       new GoogleStrategy(
         {
@@ -67,7 +67,7 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
   if (!facebookCallbackHost) {
     console.warn('⚠️ FACEBOOK_CALLBACK_URL or BACKEND_URL not set. Facebook OAuth will not work.');
   } else {
-    const facebookCallbackPath = process.env.FACEBOOK_CALLBACK_URL ? '' : '/facebook/callback';
+    const facebookCallbackPath = process.env.FACEBOOK_CALLBACK_URL ? '' : '/api/auth/facebook/callback';
     passport.use(
       new FacebookStrategy(
         {

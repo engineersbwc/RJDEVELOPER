@@ -18,43 +18,32 @@ if (process.env.NODE_ENV === 'production' && !frontendOrigin) {
   console.warn('⚠️ FRONTEND_URL or CLIENT_URL not set in production. CORS may reject requests.');
 }
 
+const allowedOrigins = [frontendOrigin].filter(Boolean);
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin) {
-        return callback(null, true);
-      }
-
-      if (process.env.NODE_ENV === 'production' && frontendOrigin) {
-        if (origin === frontendOrigin || origin.endsWith('.vercel.app')) {
-          return callback(null, true);
+      // Allow requests with no origin (like mobile apps or curl)
+      if (!origin) return callback(null, true);
+      
+      if (process.env.NODE_ENV === 'production') {
+        const isAllowed = allowedOrigins.includes(origin) || origin.endsWith('.vercel.app');
+        if (isAllowed) {
+          callback(null, true);
+        } else {
+          console.warn(`Blocked by CORS: ${origin}`);
+          callback(new Error('Not allowed by CORS'));
         }
-        return callback(new Error(`CORS origin not allowed: ${origin}`), false);
+      } else {
+        callback(null, true);
       }
-
-      return callback(null, true);
     },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
   })
 );
 
-app.options('*', cors({
-  origin: (origin, callback) => {
-    if (!origin) {
-      return callback(null, true);
-    }
-
-    if (process.env.NODE_ENV === 'production') {
-      if (origin === frontendOrigin) {
-        return callback(null, true);
-      }
-      return callback(new Error(`CORS origin not allowed: ${origin}`), false);
-    }
-
-    return callback(null, true);
-  },
-  credentials: true,
-}));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -64,14 +53,22 @@ app.get("/a", (req, res) => {
 })
 
 app.use(async (req, res, next) => {
+  // Skip DB connection for health checks if needed, or keep it to verify DB health
+  if (req.path === '/api/health') return next();
+
   try {
     await connectDB();
     next();
   } catch (err) {
-    console.error("DB connection error:", err);
-    return res.status(503).json({ success: false, error: "Service unavailable. Could not connect to the database." });
+    console.error("Critical: Database connection failed in middleware:", err.message);
+    res.status(503).json({ 
+      success: false, 
+      error: "Database connection failed. Please check if your IP is whitelisted in MongoDB Atlas.",
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
+
 
 // Test route as requested by user
 app.get("/", (req, res) => {
@@ -134,9 +131,23 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error("Unhandled Server Error:", err);
-  res.status(500).json({ success: false, error: "Internal Server Error" });
+  console.error("Unhandled Error Stack:", err.stack);
+  
+  // Handle CORS errors specifically
+  if (err.message === 'Not allowed by CORS') {
+    return res.status(403).json({
+      success: false,
+      error: "CORS error: Origin not allowed."
+    });
+  }
+
+  res.status(err.status || 500).json({ 
+    success: false, 
+    error: err.message || "Internal Server Error",
+    path: req.path
+  });
 });
+
 
 if (!process.env.VERCEL) {
   const PORT = process.env.PORT || 8000;
