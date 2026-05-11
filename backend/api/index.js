@@ -78,8 +78,15 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/api/auth", authRoutes);
-app.use("/auth", authRoutes);
+app.use("/api/auth", (req, res, next) => {
+  console.log(`🔌 Auth Route Hit: ${req.method} ${req.path}`);
+  next();
+}, authRoutes);
+
+app.use("/auth", (req, res, next) => {
+  console.log(`🔌 Legacy Auth Route Hit: ${req.method} ${req.path}`);
+  next();
+}, authRoutes);
 
 app.post("/api/contact", async (req, res) => {
   const { name, email, phone, sector, address, message } = req.body || {};

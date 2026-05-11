@@ -17,29 +17,45 @@ const getFrontendUrl = () => {
 };
 
 const oauthRedirect = (req, res) => {
-  if (!req.user) {
-    console.error("OAuth redirect called without req.user");
-    return res.status(500).json({ success: false, error: "OAuth callback did not return a valid user." });
+  try {
+    if (!req.user) {
+      console.error("❌ OAuth redirect called without req.user");
+      return res.status(500).json({ success: false, error: "OAuth callback did not return a valid user." });
+    }
+
+    const frontendUrl = getFrontendUrl();
+    if (!frontendUrl) {
+      console.error("❌ FRONTEND_URL or CLIENT_URL not configured for redirect");
+      return res.status(500).json({ success: false, error: "Server misconfiguration: FRONTEND_URL not set." });
+    }
+
+    if (!process.env.JWT_SECRET) {
+      console.error("❌ JWT_SECRET not configured. Cannot sign token.");
+      return res.status(500).json({ success: false, error: "Server misconfiguration: JWT_SECRET not set." });
+    }
+
+    console.log(`📡 Generating JWT for user: ${req.user.email}`);
+    const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    const isProd = process.env.NODE_ENV === "production";
+    const { _id, name, email } = req.user;
+
+    // Set HttpOnly cookie as fallback
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: isProd ? "none" : "lax",
+      secure: isProd,
+      path: "/",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    const redirectUrl = `${frontendUrl.replace(/\/+$/, '')}/oauth-success?token=${token}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${_id}`;
+    console.log(`🚀 Redirecting user to frontend: ${redirectUrl.split('?')[0]}...`);
+    
+    return res.redirect(redirectUrl);
+  } catch (err) {
+    console.error("❌ oauthRedirect Critical Error:", err.message);
+    return res.status(500).json({ success: false, error: "Internal server error during OAuth redirection." });
   }
-
-  const frontendUrl = getFrontendUrl();
-  if (!frontendUrl) {
-    return res.status(500).json({ success: false, error: "Server misconfiguration: FRONTEND_URL not set." });
-  }
-
-  const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-  const isProd = process.env.NODE_ENV === "production";
-  const { _id, name, email } = req.user;
-
-  res.cookie("token", token, {
-    httpOnly: true,
-    sameSite: isProd ? "none" : "lax",
-    secure: isProd,
-    path: "/",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
-
-  res.redirect(`${frontendUrl}/oauth-success?token=${token}&name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}&id=${_id}`);
 };
 
 // ── Standard Auth Routes ───────────────────────────────────────────────────
@@ -55,7 +71,7 @@ router.get("/me",  protect,     getMe);
 // ── Google OAuth ───────────────────────────────────────────────────────────
 router.get("/google", (req, res, next) => {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-    return res.status(400).json({ success: false, error: "Google OAuth is not configured on this server. Please check environment variables." });
+    return res.status(400).json({ success: false, error: "Google OAuth is not configured on this server." });
   }
   passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
 });
@@ -63,19 +79,24 @@ router.get("/google", (req, res, next) => {
 router.get(
   "/google/callback",
   (req, res, next) => {
+    console.log("📨 Google Callback reached");
     if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
       return res.status(400).json({ success: false, error: "Google OAuth is not configured." });
     }
 
     const frontendUrl = getFrontendUrl();
 
-    passport.authenticate("google", { session: false, failureRedirect: `${frontendUrl}/login` }, (err, user, info) => {
+    passport.authenticate("google", { 
+      session: false, 
+      failureRedirect: `${frontendUrl}/login?error=oauth_failed` 
+    }, (err, user, info) => {
       if (err) {
-        console.error("Google callback error:", err, info);
-        return res.status(500).json({ success: false, error: "Google OAuth error. Check backend logs." });
+        console.error("❌ Google callback Passport error:", err.message);
+        return res.status(500).json({ success: false, error: `Authentication failed: ${err.message}` });
       }
       if (!user) {
-        return res.redirect(`${frontendUrl}/login`);
+        console.warn("⚠️ No user returned from Google Strategy");
+        return res.redirect(`${frontendUrl}/login?error=no_user`);
       }
       req.user = user;
       return oauthRedirect(req, res);
