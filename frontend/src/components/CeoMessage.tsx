@@ -16,7 +16,7 @@ const CeoMessage = () => {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="relative w-full order-2 lg:order-1"
           >
-            <div className="relative rounded-3xl overflow-hidden aspect-[3/4] w-full max-w-[420px] mx-auto lg:ml-0" style={{ border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 30px 80px rgba(0,0,0,0.5)' }}>
+            <div className="relative rounded-3xl overflow-hidden aspect-[3/4] w-full max-w-[260px] md:max-w-[320px] lg:max-w-[360px] mx-auto lg:ml-0" style={{ border: '1px solid rgba(255,255,255,0.08)', boxShadow: '0 30px 80px rgba(0,0,0,0.5)' }}>
               <img
                 src="/ceo.jpg"
                 alt="Engr Rashid Mehmood - CEO & Founder"
@@ -44,14 +44,10 @@ const CeoMessage = () => {
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             className="order-1 lg:order-2"
           >
-            <div className="flex items-center gap-3 mb-5">
+            <div className="flex items-center gap-3 mb-6">
               <span className="w-8 h-px bg-accent/60"></span>
               <span className="section-label">Message from the CEO</span>
             </div>
-            
-            <h2 className="section-title mb-6">
-              Let's build something <span className="text-accent">great</span> together.
-            </h2>
             
             <div className="space-y-4 text-white/75 font-medium leading-relaxed" style={{ fontSize: '1rem' }}>
               <p>
